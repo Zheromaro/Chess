@@ -83,13 +83,13 @@ void pushState(State* newState, const char* format, ...)
                 break;
             }
             case 'G': {
-                val = malloc(sizeof(XOGameStates));
-                *(XOGameStates*)val = va_arg(args, XOGameStates);
+                val = malloc(sizeof(ChessGameStates));
+                *(ChessGameStates*)val = va_arg(args, ChessGameStates);
                 break;
             }
             case 'P': {
-                val = malloc(sizeof(XOPlayers));
-                *(XOPlayers*)val = va_arg(args, XOPlayers);
+                val = malloc(sizeof(Players));
+                *(Players*)val = va_arg(args, Players);
                 break;
             }
             case ' ': 

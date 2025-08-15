@@ -6,7 +6,7 @@
 #include "GameLogic/GameData.h"
 #include "State.h"
 
-XOGameStates gameState = DRAW;  
+ChessGameStates gameState = DRAW;  
 SDL_Rect WindowRect2 = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Texture* XWonMenuTexture = NULL;
 SDL_Texture* OWonMenuTexture = NULL;
@@ -24,16 +24,16 @@ void GameOverEnter(void* contextTable[])
     OWonMenuTexture = LoadTexture(OWonMenuImageFile);
     DrawMenuTexture = LoadTexture(DrawMenuImageFile);
 
-    gameState = *((XOGameStates*)contextTable[0]);
-    XOPlayers* cpu = ((XOPlayers*)contextTable[1]);
+    gameState = *((ChessGameStates*)contextTable[0]);
+    Players* cpu = ((Players*)contextTable[1]);
     
     if (gameState == DRAW)
         audioPlayMusic(LoseMusicFile);
     else
     {
-        if (cpu && *cpu == PLAYER_X && gameState == PLAYER_X_WON)
+        if (cpu && *cpu == WHITE_PLAYER && gameState == BLACK_PLAYER_WON)
             audioPlayMusic(LoseMusicFile);
-        else if (cpu && *cpu == PLAYER_O && gameState == PLAYER_O_WON)
+        else if (cpu && *cpu == BLACK_PLAYER && gameState == WHITE_PLAYER_WON)
             audioPlayMusic(LoseMusicFile);
         else
             audioPlayMusic(WinMusicFile);
@@ -64,10 +64,10 @@ void GameOverRender(SDL_Renderer *renderer)
 {
     switch (gameState)
     {
-    case PLAYER_X_WON:
+    case BLACK_PLAYER_WON:
         SDL_RenderCopy(renderer, XWonMenuTexture, NULL, &WindowRect2);
         break;
-    case PLAYER_O_WON:
+    case WHITE_PLAYER_WON:
         SDL_RenderCopy(renderer, OWonMenuTexture, NULL, &WindowRect2);
         break;
     case DRAW:

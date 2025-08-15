@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(TICTACTOE VERSION 1.0)
+project(CHESS VERSION 1.0)
 
 # === Source Files ===
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)

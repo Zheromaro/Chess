@@ -2,89 +2,88 @@
 #include "GameLogic/Logic.h"
 
 void InitBoard(GameData* data);
-bool PlayerWon(GameData* data, XOPlayers player);
-bool BoardIsFull(XOCellStates board[NUM_ROW_COL][NUM_ROW_COL]);
+bool PlayerWon(GameData* data, Players player);
+bool Stalemate(SquareStates board[NUM_ROW_COL][NUM_ROW_COL]);
 int MinMax(GameData* data, int depth, bool isMaximizing);
 
 void ResetGame(GameData* data)
 {
     data->GameState = STILL_PLAYING;
-    data->currentPlayer = PLAYER_X;
+    data->currentPlayer = WHITE_PLAYER;
     InitBoard(data);
 }
-void SwitchPlayer(XOPlayers* current)
+void SwitchPlayer(Players* current)
 {
-    if (*current == PLAYER_X)
-        *current = PLAYER_O;
-    else if (*current == PLAYER_O)
-        *current = PLAYER_X;
+    if (*current == WHITE_PLAYER)
+        *current = BLACK_PLAYER;
+    else if (*current == BLACK_PLAYER)
+        *current = WHITE_PLAYER;
 }
-bool ClickOnCell(GameData* data, int row, int colum)
+bool ClickOnPiece(GameData* data, int row, int colum)
 {
-    if (data->board[row][colum] == EMPTY_CELL)
-    {
-        if (data->currentPlayer == PLAYER_X)
-        {
-            data->board[row][colum] = X_CELL;
-        }
-        else if (data->currentPlayer == PLAYER_O)
-        {
-            data->board[row][colum] = O_CELL;
-        }
-        return true;
-    }
-    return false;
+    SquareStates square = data->board[row][colum];
+    Players player = data->currentPlayer;
+
+    if (square.isEmpty) return false;
+    if (square.pieceColor == BLACK && player == WHITE_PLAYER) return false;
+    if (square.pieceColor == WHITE && player == BLACK_PLAYER) return false;
+    
+    // TODO: deselect old selected piece
+    // TODO: select the new piece
 }
 void GetAIMove(GameData* data, int* bestRow, int* bestCol)
 {
-    *bestRow = -1;
-    *bestCol = -1;
+    // TODO: make it work for chess
+
+    //*bestRow = -1;
+    //*bestCol = -1;
     
-    bool isMaximizing = true;
-    if (data->currentPlayer == PLAYER_X) isMaximizing = true;
-    else if (data->currentPlayer == PLAYER_O) isMaximizing = false;
+    //bool isMaximizing = true;
+    //if (data->currentPlayer == WHITE_PLAYER) isMaximizing = true;
+    //else if (data->currentPlayer == BLACK_PLAYER) isMaximizing = false;
 
-    int bestScore = (isMaximizing) ? -1000 : 1000;
-    XOCellStates playerCell = (isMaximizing) ? X_CELL : O_CELL;
+    //int bestScore = (isMaximizing) ? -1000 : 1000;
+    //Pieces playerCell = (isMaximizing) ? X_CELL : O_CELL;
 
-    for (int row = 0; row < NUM_ROW_COL; row++)
-    {
-        for (int col = 0; col < NUM_ROW_COL; col++)
-        {
-            if (data->board[row][col] == EMPTY_CELL)
-            {
-                // Simulate the move
-                data->board[row][col] = playerCell;
-                int score = MinMax(data, 10, !isMaximizing);
+    //for (int row = 0; row < NUM_ROW_COL; row++)
+    //{
+    //    for (int col = 0; col < NUM_ROW_COL; col++)
+    //    {
+    //        if (data->board[row][col] == EMPTY)
+    //        {
+    //            // Simulate the move
+    //            data->board[row][col] = playerCell;
+    //            int score = MinMax(data, 10, !isMaximizing);
 
-                // Undo the move
-                data->board[row][col] = EMPTY_CELL;
+    //            // Undo the move
+    //            data->board[row][col] = EMPTY;
 
-                // Get best move
-                if (isMaximizing && (score > bestScore) ||
-                    !isMaximizing && (score < bestScore))
-                {
-                    bestScore = score;
-                    *bestRow = row;
-                    *bestCol = col;
-                }
-            }
-        }
-    }
+    //            // Get best move
+    //            if (isMaximizing && (score > bestScore) ||
+    //                !isMaximizing && (score < bestScore))
+    //            {
+    //                bestScore = score;
+    //                *bestRow = row;
+    //                *bestCol = col;
+    //            }
+    //        }
+    //    }
+    //}
 }
 bool GameIsOver(GameData* data)
 {
-    if (PlayerWon(data, PLAYER_X))
+    // TODO: Add resign and agreed on draw
+    if (PlayerWon(data, WHITE_PLAYER))
     {
-        data->GameState = PLAYER_X_WON;
+        data->GameState = BLACK_PLAYER_WON;
         return true;
     }
-    else if (PlayerWon(data, PLAYER_O))
+    else if (PlayerWon(data, BLACK_PLAYER))
     {
-        data->GameState = PLAYER_O_WON;
+        data->GameState = WHITE_PLAYER_WON;
         return true;
     }
-    else if (BoardIsFull(data->board))
+    else if (Stalemate(data->board))
     {
         data->GameState = DRAW;
         return true;
@@ -100,69 +99,87 @@ void InitBoard(GameData* data)
     {
         for (int colom = 0; colom < NUM_ROW_COL; colom++)
         {
-            data->board[row][colom] = EMPTY_CELL;
+            if (colom == 1 || colom == 6)
+            {
+                data->board[row][colom].isEmpty = false;
+                data->board[row][colom].piece = PAWN;
+                data->board[row][colom].pieceColor = (colom == 1) ? BLACK : WHITE;
+            }
+            else if (colom == 0 || colom == 7)
+            {
+                data->board[row][colom].isEmpty = false;
+                data->board[row][colom].pieceColor = (colom == 0) ? BLACK : WHITE;
+                switch (row)
+                {
+                case 0:
+                case 7:
+                    data->board[row][colom].piece = ROOK;
+                    break;
+                case 1:
+                case 6:
+                    data->board[row][colom].piece = KNIGHT;
+                    break;
+                case 2:
+                case 5:
+                    data->board[row][colom].piece = BISHOP;
+                    break;
+                case 3:
+                    data->board[row][colom].piece = QUEEN;
+                    break;
+                case 4:
+                    data->board[row][colom].piece = KING;
+                    break;
+                default:
+                    break;
+                }
+            }
+            else
+                data->board[row][colom].isEmpty = true;
         }
     }
 }
-bool PlayerWon(GameData* data, XOPlayers player)
+bool PlayerWon(GameData* data, Players player)
 {
-    XOCellStates playerCell = (player == PLAYER_X) ? X_CELL : O_CELL;
-
-    // Check rows and columns
-    for (int i = 0; i < NUM_ROW_COL; i++)
-    {
-        if ((data->board[i][0] == playerCell && data->board[i][1] == playerCell && data->board[i][2] == playerCell) ||
-            (data->board[0][i] == playerCell && data->board[1][i] == playerCell && data->board[2][i] == playerCell))
-        {
-            return true;
-        }
-    }
-
-    // Check diagonals
-    if ((data->board[0][0] == playerCell && data->board[1][1] == playerCell && data->board[2][2] == playerCell) ||
-        (data->board[0][2] == playerCell && data->board[1][1] == playerCell && data->board[2][0] == playerCell))
-    {
-        return true;
-    }
+    // TODO: Check if King is cheked
+    // TODO: Check if King can't move
 
     return false;
 }
-bool BoardIsFull(XOCellStates board[NUM_ROW_COL][NUM_ROW_COL])
+bool Stalemate(SquareStates board[NUM_ROW_COL][NUM_ROW_COL])
 {
-    for (int row = 0; row < NUM_ROW_COL; row++)
-    {
-        for (int colom = 0; colom < NUM_ROW_COL; colom++)
-        {
-            if (board[row][colom] == EMPTY_CELL) return false;
-        }
-    }
+    // TODO: Check if King can't move
+    // TODO: Check if no other piece can move
 
-    return true;
+    return false;
 }
 int MinMax(GameData* data, int depth, bool isMaximizing)
 {
-    if (depth == 0 || GameIsOver(data))
-        return data->GameState;
+    // TODO: make MinMax for chess
+
+    //if (depth == 0 || GameIsOver(data))
+    //    return data->GameState;
+    //
+    //int finalScore = (isMaximizing) ? -1005 : 1005;
+    //Pieces playerCell = (isMaximizing) ? X_CELL : O_CELL;
+    //
+    //for (int row = 0; row < NUM_ROW_COL; row++)
+    //{
+    //    for (int colom = 0; colom < NUM_ROW_COL; colom++)
+    //    {
+    //        if (data->board[row][colom] == EMPTY)
+    //        {
+    //            data->board[row][colom] = playerCell;
+    //            int score = MinMax(data, depth - 1, !isMaximizing);
+    //            data->board[row][colom] = EMPTY;
+    //            if (isMaximizing && (score > finalScore) ||
+    //                !isMaximizing && (score < finalScore))
+    //            {
+    //                finalScore = score;
+    //            }
+    //        }
+    //    }
+    //}
+    //return finalScore;
     
-    int finalScore = (isMaximizing) ? -1005 : 1005;
-    XOCellStates playerCell = (isMaximizing) ? X_CELL : O_CELL;
-    
-    for (int row = 0; row < NUM_ROW_COL; row++)
-    {
-        for (int colom = 0; colom < NUM_ROW_COL; colom++)
-        {
-            if (data->board[row][colom] == EMPTY_CELL)
-            {
-                data->board[row][colom] = playerCell;
-                int score = MinMax(data, depth - 1, !isMaximizing);
-                data->board[row][colom] = EMPTY_CELL;
-                if (isMaximizing && (score > finalScore) ||
-                    !isMaximizing && (score < finalScore))
-                {
-                    finalScore = score;
-                }
-            }
-        }
-    }
-    return finalScore;
+    return 0;
 }

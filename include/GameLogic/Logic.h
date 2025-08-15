@@ -5,8 +5,8 @@
 #include "GameLogic/GameData.h"
 
 void ResetGame(GameData* data);
-void SwitchPlayer(XOPlayers* current);
-bool ClickOnCell(GameData* data, int row, int colum);
+void SwitchPlayer(Players* current);
+bool ClickOnPiece(GameData* data, int row, int colum);
 bool GameIsOver(GameData* data);
 void GetAIMove(GameData* data, int* bestRow, int* bestCol);
 

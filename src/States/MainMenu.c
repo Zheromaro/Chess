@@ -26,10 +26,10 @@ void MainMenuProcessInput(SDL_Event event)
             pushState(&twoPlayerState, "");
             break;
         case SDLK_KP_2:
-            pushState(&choosePlayerState, "");
+            printf("Still in working on it\n");
             break;
         case SDLK_KP_3:
-            printf("Still in Thinking :{ \n");
+            printf("Still in Thinking :{\n");
             break;
         break;
         }

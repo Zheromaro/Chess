@@ -9,9 +9,9 @@
 void Move(GameData *data, int row, int colum);
 
 GameData TowPlayerData = {
-    .GameState = PLAYER_O_WON,
-    .board = {EMPTY_CELL},
-    .currentPlayer = PLAYER_X
+    .GameState = WHITE_PLAYER_WON,
+    .board = NULL,
+    .currentPlayer = WHITE_PLAYER
 };
 
 void TwoPlayerEnter(void *contextTable[]) 
@@ -28,34 +28,6 @@ void TwoPlayerProcessInput(SDL_Event event)
         {
         case SDLK_SPACE:
             popState();
-            break;
-
-        case SDLK_KP_1:
-            Move(&TowPlayerData, 0, 2);
-            break;
-        case SDLK_KP_2:
-            Move(&TowPlayerData, 1, 2);
-            break; 
-        case SDLK_KP_3:
-            Move(&TowPlayerData, 2, 2);
-            break; 
-        case SDLK_KP_4:
-            Move(&TowPlayerData, 0, 1);
-            break; 
-        case SDLK_KP_5:
-            Move(&TowPlayerData, 1, 1);
-            break; 
-        case SDLK_KP_6:
-            Move(&TowPlayerData, 2, 1);
-            break; 
-        case SDLK_KP_7:
-            Move(&TowPlayerData, 0, 0);
-            break;
-        case SDLK_KP_8:
-            Move(&TowPlayerData, 1, 0);
-            break;
-        case SDLK_KP_9:
-            Move(&TowPlayerData, 2, 0);
             break;
         }
         break;
@@ -79,7 +51,7 @@ State twoPlayerState = {
 
 void Move(GameData *data, int row, int colum)
 {
-    bool succeed = ClickOnCell(data, row, colum);
+    bool succeed = ClickOnPiece(data, row, colum);
     if (succeed)
     {
         SwitchPlayer(&(data->currentPlayer));
