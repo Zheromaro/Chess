@@ -16,7 +16,6 @@ bool aiThinking = false;
 
 GameData VScpuData = {
     .GameState = STILL_PLAYING,
-    .board = NULL,
     .currentPlayer = WHITE_PLAYER
 };
 Players cpuIs = WHITE_PLAYER;

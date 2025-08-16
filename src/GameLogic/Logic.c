@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "GameLogic/Logic.h"
 
+Piece* NewPiece(PieceType type, PieceColor color);
 void InitBoard(GameData* data);
 bool PlayerWon(GameData* data, Players player);
-bool Stalemate(SquareStates board[NUM_ROW_COL][NUM_ROW_COL]);
+bool Stalemate(Square board[NUM_ROW_COL][NUM_ROW_COL]);
 int MinMax(GameData* data, int depth, bool isMaximizing);
 
 void ResetGame(GameData* data)
@@ -21,12 +23,13 @@ void SwitchPlayer(Players* current)
 }
 bool ClickOnPiece(GameData* data, int row, int colum)
 {
-    SquareStates square = data->board[row][colum];
+    Square square = data->board[row][colum];
     Players player = data->currentPlayer;
 
-    if (square.isEmpty) return false;
-    if (square.pieceColor == BLACK && player == WHITE_PLAYER) return false;
-    if (square.pieceColor == WHITE && player == BLACK_PLAYER) return false;
+    data->selectedSquare = &(data->board[row][colum]);
+    if (square.piece == NULL) return false;
+    if (square.piece->pieceColor == BLACK && player == WHITE_PLAYER) return false;
+    if (square.piece->pieceColor == WHITE && player == BLACK_PLAYER) return false;
     
     // TODO: deselect old selected piece
     // TODO: select the new piece
@@ -95,46 +98,47 @@ bool GameIsOver(GameData* data)
 // private
 void InitBoard(GameData* data)
 {
+    data->selectedSquare = NULL;
     for (int row = 0; row < NUM_ROW_COL; row++)
     {
         for (int colom = 0; colom < NUM_ROW_COL; colom++)
         {
+            data->board[row][colom].x = row;
+            data->board[row][colom].y = colom;
             if (colom == 1 || colom == 6)
             {
-                data->board[row][colom].isEmpty = false;
-                data->board[row][colom].piece = PAWN;
-                data->board[row][colom].pieceColor = (colom == 1) ? BLACK : WHITE;
+                Piece* piece = NewPiece(PAWN, (colom == 1) ? BLACK : WHITE);
+                data->board[row][colom].piece = piece;
             }
             else if (colom == 0 || colom == 7)
             {
-                data->board[row][colom].isEmpty = false;
-                data->board[row][colom].pieceColor = (colom == 0) ? BLACK : WHITE;
+                Piece* piece = NewPiece(0 , (colom == 0) ? BLACK : WHITE);
                 switch (row)
                 {
                 case 0:
                 case 7:
-                    data->board[row][colom].piece = ROOK;
+                    piece->pieceType = ROOK;
                     break;
                 case 1:
                 case 6:
-                    data->board[row][colom].piece = KNIGHT;
+                    piece->pieceType = KNIGHT;
                     break;
                 case 2:
                 case 5:
-                    data->board[row][colom].piece = BISHOP;
+                    piece->pieceType = BISHOP;
                     break;
                 case 3:
-                    data->board[row][colom].piece = QUEEN;
+                    piece->pieceType = QUEEN;
                     break;
                 case 4:
-                    data->board[row][colom].piece = KING;
+                    piece->pieceType = KING;
                     break;
                 default:
                     break;
                 }
+                data->board[row][colom].piece = piece;
             }
-            else
-                data->board[row][colom].isEmpty = true;
+            
         }
     }
 }
@@ -145,7 +149,7 @@ bool PlayerWon(GameData* data, Players player)
 
     return false;
 }
-bool Stalemate(SquareStates board[NUM_ROW_COL][NUM_ROW_COL])
+bool Stalemate(Square board[NUM_ROW_COL][NUM_ROW_COL])
 {
     // TODO: Check if King can't move
     // TODO: Check if no other piece can move
@@ -182,4 +186,13 @@ int MinMax(GameData* data, int depth, bool isMaximizing)
     //return finalScore;
     
     return 0;
+}
+Piece* NewPiece(PieceType type, PieceColor color)
+{
+    Piece* result = malloc(sizeof(Piece));
+    if (result == NULL) exit(EXIT_FAILURE);
+
+    result->pieceType = type;
+    result->pieceColor = color;
+    return result;
 }

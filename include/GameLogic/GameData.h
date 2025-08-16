@@ -7,10 +7,11 @@
 #define FRAME_TARGET_TIME (1000 / FPS)
 #define FONTSIZE 500
 
-#define GRID_SIZE 100
 #define NUM_ROW_COL 8
-#define CELL_HEIGHT ((WINDOW_HEIGHT / NUM_ROW_COL))
-#define CELL_WIDTH ((WINDOW_WIDTH / NUM_ROW_COL))
+#define BOARD_WIDTH (WINDOW_WIDTH * 0.97)
+#define BOARD_HEIGHT (WINDOW_WIDTH * 0.97)
+#define CELL_WIDTH ((BOARD_WIDTH) / NUM_ROW_COL)
+#define CELL_HEIGHT ((BOARD_HEIGHT) / NUM_ROW_COL)
 
 typedef enum ChessGameStates {
     STILL_PLAYING = 1,
@@ -22,30 +23,36 @@ typedef enum Players {
     WHITE_PLAYER,
     BLACK_PLAYER
 } Players;
-typedef enum Pieces {
+typedef enum PieceType {
     PAWN,
     KNIGHT,
     BISHOP,
     ROOK,
     KING,
     QUEEN
-} Pieces;
+} PieceType;
 typedef enum PieceColor {
     BLACK,
     WHITE
 } PieceColor;
 
 // structs
-typedef struct SquareStates
+typedef struct Piece
 {
-    bool isEmpty;
     PieceColor pieceColor;
-    Pieces piece;
-} SquareStates;
+    PieceType pieceType;
+} Piece;
+typedef struct Square
+{
+    int x;
+    int y;
+    Piece* piece;
+} Square;
 typedef struct GameData
 {
     ChessGameStates GameState;
-    SquareStates board[NUM_ROW_COL][NUM_ROW_COL];
+    Square* selectedSquare;
+    Square board[NUM_ROW_COL][NUM_ROW_COL];
     Players currentPlayer;
 } GameData;
 

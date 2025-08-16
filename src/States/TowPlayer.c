@@ -9,8 +9,7 @@
 void Move(GameData *data, int row, int colum);
 
 GameData TowPlayerData = {
-    .GameState = WHITE_PLAYER_WON,
-    .board = NULL,
+    .GameState = STILL_PLAYING,
     .currentPlayer = WHITE_PLAYER
 };
 
@@ -32,7 +31,7 @@ void TwoPlayerProcessInput(SDL_Event event)
         }
         break;
     case SDL_MOUSEBUTTONDOWN:
-        Move(&TowPlayerData,
+        ClickOnPiece(&TowPlayerData,
              event.button.x / CELL_WIDTH,
              event.button.y / CELL_HEIGHT);
         break;

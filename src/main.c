@@ -20,7 +20,7 @@ bool initialize_window(void){
     }
 
     window = SDL_CreateWindow(
-        NULL,  
+        "Zahrawi Chess",  
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WINDOW_WIDTH,
