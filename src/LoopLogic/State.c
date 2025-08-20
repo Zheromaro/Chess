@@ -2,8 +2,8 @@
 #include <SDL2/SDL.h>
 #include <Stack.h>
 #include "GameLogic/GameData.h"
-#include "State.h"
-#include "appSettings.h"
+#include "LoopLogic/State.h"
+#include "LoopLogic/appSettings.h"
 
 #define MAX_CONTEXT_NUM 10
 

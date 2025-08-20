@@ -3,7 +3,7 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 #include <fmod_common.h>
-#include "audio.h"
+#include "LoopLogic/audio.h"
 
 FMOD_SYSTEM *fmodSystem = NULL;
 FMOD_CHANNEL *musicChannel = NULL;

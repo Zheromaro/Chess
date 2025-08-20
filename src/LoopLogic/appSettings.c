@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "appSettings.h"
+#include "LoopLogic/appSettings.h"
 
 bool *pGameIsRunning = NULL;
 bool *pReloadingGame = NULL;

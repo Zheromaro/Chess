@@ -1,5 +1,5 @@
-#include "image.h"
-#include "State.h"
+#include "LoopLogic/image.h"
+#include "LoopLogic/State.h"
 #include "GameLogic/RenderingBoard.h"
 
 void RenderChessPieces(SDL_Renderer *renderer, const Square board[NUM_ROW_COL ][NUM_ROW_COL ]);

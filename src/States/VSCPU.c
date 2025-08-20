@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include "image.h"
-#include "audio.h"
-#include "State.h"
+#include "LoopLogic/image.h"
+#include "LoopLogic/audio.h"
+#include "LoopLogic/State.h"
 #include "GameLogic/GameData.h"
 #include "GameLogic/Logic.h"
 #include "GameLogic/RenderingBoard.h"

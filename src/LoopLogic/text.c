@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "text.h"
-#include "image.h"
+#include "LoopLogic/text.h"
+#include "LoopLogic/image.h"
 #include "GameLogic/GameData.h"
 
 

@@ -1,10 +1,10 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include "audio.h"
-#include "image.h"
-#include "text.h"
-#include "appSettings.h"
-#include "State.h"
+#include "LoopLogic/audio.h"
+#include "LoopLogic/image.h"
+#include "LoopLogic/text.h"
+#include "LoopLogic/appSettings.h"
+#include "LoopLogic/State.h"
 #include "GameLogic/GameData.h"
 
 

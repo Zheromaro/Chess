@@ -1,10 +1,10 @@
 #include <SDL2/SDL.h>
-#include "image.h"
-#include "audio.h"
-#include "text.h"
-#include "appSettings.h"
+#include "LoopLogic/image.h"
+#include "LoopLogic/audio.h"
+#include "LoopLogic/text.h"
+#include "LoopLogic/appSettings.h"
 #include "GameLogic/GameData.h"
-#include "State.h"
+#include "LoopLogic/State.h"
 
 SDL_Rect WindowRect3   = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Texture* choosePlayerTexture = NULL;

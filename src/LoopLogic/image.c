@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "image.h"
+#include "LoopLogic/image.h"
 
 SDL_Renderer *imageRenderer = NULL;
 
