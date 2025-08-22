@@ -31,17 +31,43 @@ INSTALL_LOCATION := ~/.local
 help:
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-test: ## run tests quickly with ctest
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=1 -DCMAKE_BUILD_TYPE="Release"
+test_ctest: ## configure, rebuild, run with CTest
+	cmake -B build -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=1
 	cmake --build build --config Release
-	cd build/ && ctest -C Release -VV
+	cd build && ctest -C Release -VV
 
-build: clean ## clean the build directory and rebuild it the project
-	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 -DCMAKE_BUILD_TYPE="Release"
+test_direct: ## configure, rebuild, run all test executables directly
+	cmake -B build -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=1
 	cmake --build build --config Release
+	@for test in build/test/*_Test; do \
+	  echo ">>> Running $$test"; \
+	  $$test --gtest_color=yes || exit 1; \
+	done
+
+test_dir: ## run only one test executable: make test_dir DIR=dir/name
+	@if [ -z "$(DIR)" ]; then \
+	  echo "Usage: make test_dir DIR=foo"; \
+	  exit 1; \
+	fi
+	@executable="build/test/$(DIR)_Test"; \
+	if [ -x "$$executable" ]; then \
+	  echo ">>> Running $$executable"; \
+	  $$executable --gtest_color=yes || exit 1; \
+	else \
+	  echo "Error: test executable $$executable not found."; \
+	  exit 1; \
+	fi
 
 clean: ## clean the build directory
 	rm -rf build/
 
+build: clean ## clean the build directory and rebuild it
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 
+	cmake --build build --config Release
+
+release: clean ## clean the build directory and rebuild it for release
+	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 -DCMAKE_BUILD_TYPE="Release"
+	cmake --build build --config Release
+
 run: ## run the project
-	./build/bin/Release/
+	./build/bin/Release/CHESS || ./build/bin/Debug/CHESS

@@ -11,20 +11,30 @@ project(
 
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
-foreach(file ${test_sources})
-  string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.cpp)" "\\2" test_name ${file}) 
-  add_executable(${test_name}_Tests ${file})
+foreach(dir ${test_dirs})
+  #
+  # Get all sources in this directory
+  #
+
+  file(GLOB dir_sources ${dir}/*.cpp)
+
+  #
+  # executable
+  #
+
+  get_filename_component(dir_name ${dir} NAME)
+  add_executable(${dir_name}_Test ${dir_sources})
 
   #
   # Set the compiler standard
   #
 
-  target_compile_features(${test_name}_Tests PUBLIC cxx_std_17)
+  target_compile_features(${dir_name}_Test PUBLIC cxx_std_17)
 
   #
   # Load the desired unit testing framework
   #
-  # Currently supported: GoogleTest (and GoogleMock), Catch2.
+  # Currently supported: GoogleTest (and GoogleMock)
 
   if(${CMAKE_PROJECT_NAME}_BUILD_EXECUTABLE)
     set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_LIB)
@@ -40,7 +50,7 @@ foreach(file ${test_sources})
     endif()
 
     target_link_libraries(
-      ${test_name}_Tests
+      ${dir_name}_Test
       PUBLIC
         GTest::GTest
         GTest::Main
@@ -52,14 +62,14 @@ foreach(file ${test_sources})
   endif()
 
   #
-  # Add the unit tests
+  # Add the unit tests to CTest
   #
 
   add_test(
     NAME
-      ${test_name}
+      ${dir_name}
     COMMAND
-      ${test_name}_Tests
+      ${dir_name}_Test
   )
 endforeach()
 

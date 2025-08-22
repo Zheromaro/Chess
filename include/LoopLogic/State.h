@@ -27,7 +27,7 @@ typedef struct State
 extern State mainMenuState;
 extern State twoPlayerState;
 extern State gameOverState;
-extern State VScpuState;
+//extern State VScpuState;
 extern State choosePlayerState;
 
 bool StateInit();

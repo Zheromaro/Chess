@@ -4,17 +4,20 @@
 #include "LoopLogic/State.h"
 #include "GameLogic/GameData.h"
 #include "GameLogic/Logic.h"
+#include "GameLogic/Board.h"
 #include "GameLogic/RenderingBoard.h"
 
-void Move(GameData *data, int row, int colum);
+//void Move(GameData *data, int row, int colum);
 
 GameData TowPlayerData = {
     .GameState = STILL_PLAYING,
     .currentPlayer = WHITE_PLAYER
 };
+Board towPlayerBoard;
 
 void TwoPlayerEnter(void *contextTable[]) 
 {
+    init_board(&towPlayerBoard);
     ResetGame(&TowPlayerData);
     GetXOImage();
 }
@@ -31,9 +34,7 @@ void TwoPlayerProcessInput(SDL_Event event)
         }
         break;
     case SDL_MOUSEBUTTONDOWN:
-        ClickOnPiece(&TowPlayerData,
-             event.button.x / CELL_WIDTH,
-             event.button.y / CELL_HEIGHT);
+        click_on_square(&towPlayerBoard, SQUARE(event.button.y / CELL_HEIGHT, event.button.x / CELL_WIDTH));
         break;
     }
 }
@@ -48,13 +49,13 @@ State twoPlayerState = {
     .render = TwoPlayerRender
 };
 
-void Move(GameData *data, int row, int colum)
-{
-    bool succeed = ClickOnPiece(data, row, colum);
-    if (succeed)
-    {
-        SwitchPlayer(&(data->currentPlayer));
-        if (GameIsOver(data))
-            pushState(&gameOverState, "G", data->GameState);
-    }
-}
+//void Move(GameData *data, int row, int colum)
+//{
+//    bool succeed = ClickOnPiece(data, row, colum);
+//    if (succeed)
+//    {
+//        SwitchPlayer(&(data->currentPlayer));
+//        if (GameIsOver(data))
+//            pushState(&gameOverState, "G", data->GameState);
+//    }
+//}

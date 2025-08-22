@@ -26,18 +26,6 @@ if (UNIX)
 endif (UNIX)
 
 #
-# Setup alternative names
-#
-
-if(${PROJECT_NAME}_USE_ALT_NAMES)
-  string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)
-  string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
-else()
-  set(PROJECT_NAME_LOWERCASE ${PROJECT_NAME})
-  set(PROJECT_NAME_UPPERCASE ${PROJECT_NAME})
-endif()
-
-#
 # Prevent building in the source directory
 #
 

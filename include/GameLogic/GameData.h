@@ -23,36 +23,12 @@ typedef enum Players {
     WHITE_PLAYER,
     BLACK_PLAYER
 } Players;
-typedef enum PieceType {
-    PAWN,
-    KNIGHT,
-    BISHOP,
-    ROOK,
-    KING,
-    QUEEN
-} PieceType;
-typedef enum PieceColor {
-    BLACK,
-    WHITE
-} PieceColor;
+
 
 // structs
-typedef struct Piece
-{
-    PieceColor pieceColor;
-    PieceType pieceType;
-} Piece;
-typedef struct Square
-{
-    int x;
-    int y;
-    Piece* piece;
-} Square;
 typedef struct GameData
 {
     ChessGameStates GameState;
-    Square* selectedSquare;
-    Square board[NUM_ROW_COL][NUM_ROW_COL];
     Players currentPlayer;
 } GameData;
 

@@ -26,10 +26,10 @@ void ChoosePlayerProcessInput(SDL_Event event)
             popState();
             break;
         case SDLK_KP_1:
-            pushState(&VScpuState, "P", BLACK_PLAYER);
+            //pushState(&VScpuState, "P", BLACK_PLAYER);
             break;
         case SDLK_KP_2:
-            pushState(&VScpuState, "P", WHITE_PLAYER);
+            //pushState(&VScpuState, "P", WHITE_PLAYER);
             break;
         }
         break;
