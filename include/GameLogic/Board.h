@@ -45,6 +45,7 @@ typedef struct Board
 } Board;
 
 void init_board(Board* board);
+void init_board_empty(Board* board);
 void click_on_square(Board* board, uint64_t square);
 void place_piece(Bitboard *board, uint64_t square);
 void remove_piece(Bitboard *board, uint64_t square);

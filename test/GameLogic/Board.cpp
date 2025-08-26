@@ -12,20 +12,7 @@ public:
     
     // called before every TEST_F
     void SetUp() override {
-        // empty board
-        board.white_pawns   = 0x0000000000000000ULL;
-        board.white_knights = 0x0000000000000000ULL;
-        board.white_bishops = 0x0000000000000000ULL;
-        board.white_rooks   = 0x0000000000000000ULL;
-        board.white_queen   = 0x0000000000000000ULL;
-        board.white_king    = 0x0000000000000000ULL;
-        board.black_pawns   = 0x0000000000000000ULL;
-        board.black_knights = 0x0000000000000000ULL;
-        board.black_bishops = 0x0000000000000000ULL;
-        board.black_rooks   = 0x0000000000000000ULL;
-        board.black_queen   = 0x0000000000000000ULL;
-        board.black_king    = 0x0000000000000000ULL;
-        board.cliked_square = 0x0000000000000000ULL;
+        init_board_empty(&board);
     }
     
     // called after every TEST_F
@@ -34,7 +21,7 @@ public:
     }
 };
 
-TEST(BoardBasics_TEST, click_on_square)
+TEST(BoardBasics_TEST, init_board)
 {
     // arrange
     Board board;
@@ -55,6 +42,30 @@ TEST(BoardBasics_TEST, click_on_square)
     EXPECT_EQ(board.black_rooks   ,0x8100000000000000ULL);
     EXPECT_EQ(board.black_queen   ,0x0800000000000000ULL);
     EXPECT_EQ(board.black_king    ,0x1000000000000000ULL);
+    EXPECT_EQ(board.cliked_square ,0x0000000000000000ULL);
+}
+
+TEST(BoardBasics_TEST, init_board_empty)
+{
+    // arrange
+    Board board;
+
+    // act
+    init_board_empty(&board);
+
+    // expect
+    EXPECT_EQ(board.white_pawns   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.white_knights ,0x0000000000000000ULL);
+    EXPECT_EQ(board.white_bishops ,0x0000000000000000ULL);
+    EXPECT_EQ(board.white_rooks   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.white_queen   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.white_king    ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_pawns   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_knights ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_bishops ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_rooks   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_queen   ,0x0000000000000000ULL);
+    EXPECT_EQ(board.black_king    ,0x0000000000000000ULL);
     EXPECT_EQ(board.cliked_square ,0x0000000000000000ULL);
 }
 
@@ -164,4 +175,25 @@ TEST_F(Board_TEST, is_occupied)
     EXPECT_TRUE(result1);
     EXPECT_FALSE(result2);
     EXPECT_FALSE(result3);
+}
+
+TEST_F(Board_TEST, update_board)
+{
+    // arrange
+    init_board(&board);
+    place_piece(&(board.black_pawns), E4);
+    place_piece(&(board.black_pawns), D4);
+    place_piece(&(board.white_bishops), F5);
+
+    // act
+    update_board(&board);
+    
+    // expect
+    ASSERT_EQ(board.white_occupied, board.white_pawns | board.white_knights |
+                                    board.white_bishops | board.white_rooks |
+                                    board.white_queen | board.white_king);
+    ASSERT_EQ(board.black_occupied, board.black_pawns | board.black_knights |
+                                    board.black_bishops | board.black_rooks |
+                                    board.black_queen | board.black_king);
+    EXPECT_EQ(board.occupied_squares, board.black_occupied | board.white_occupied);
 }

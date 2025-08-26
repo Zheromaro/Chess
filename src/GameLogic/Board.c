@@ -22,6 +22,27 @@ void init_board(Board* board)
     board->abailable_moves = 0x0000000000000000ULL;
 }
 
+void init_board_empty(Board* board)
+{
+    // White pieces
+    board->white_pawns   = 0x0000000000000000ULL;
+    board->white_knights = 0x0000000000000000ULL;
+    board->white_bishops = 0x0000000000000000ULL;
+    board->white_rooks   = 0x0000000000000000ULL;
+    board->white_queen   = 0x0000000000000000ULL;
+    board->white_king    = 0x0000000000000000ULL;
+    // Black pieces
+    board->black_pawns   = 0x0000000000000000ULL;
+    board->black_knights = 0x0000000000000000ULL;
+    board->black_bishops = 0x0000000000000000ULL;
+    board->black_rooks   = 0x0000000000000000ULL;
+    board->black_queen   = 0x0000000000000000ULL;
+    board->black_king    = 0x0000000000000000ULL;
+    // Other
+    board->cliked_square = 0x0000000000000000ULL;
+    board->abailable_moves = 0x0000000000000000ULL;
+}
+
 void click_on_square(Board* board, uint64_t square) {
     if (board->cliked_square == square)
         board->cliked_square = 0;
@@ -54,11 +75,6 @@ void print_bitboard(Bitboard board) {
 
 void update_board(Board* board) 
 {
-    board->occupied_squares = board->white_pawns | board->white_knights | board->white_bishops |
-                              board->white_rooks | board->white_queen | board->white_king |
-                              board->black_pawns | board->black_knights | board->black_bishops |
-                              board->black_rooks | board->black_queen | board->black_king;
-    
     board->white_occupied = board->white_pawns | board->white_knights |
                             board->white_bishops | board->white_rooks |
                             board->white_queen | board->white_king;
@@ -66,4 +82,6 @@ void update_board(Board* board)
     board->black_occupied = board->black_pawns | board->black_knights |
                             board->black_bishops | board->black_rooks |
                             board->black_queen | board->black_king;
+
+    board->occupied_squares = board->white_occupied | board->black_occupied;
 }

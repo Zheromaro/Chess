@@ -6,7 +6,7 @@ const uint64_t notAB = 0xfcfcfcfcfcfcfcfcULL; // ~files A,B
 const uint64_t notH  = 0x7f7f7f7f7f7f7f7fULL; // ~file H
 const uint64_t notGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
-Bitboard wpawn_moves(Players player, Board board, uint64_t square)
+Bitboard wpawn_moves(Board board, uint64_t square)
 {
     Bitboard pawnPlace = (1ULL << square);
     Bitboard moves = 0ULL;
@@ -16,8 +16,8 @@ Bitboard wpawn_moves(Players player, Board board, uint64_t square)
     moves |= singlePush;
 
     // Double push (only from rank 2 → rank 4)
-    uint64_t rank2 = 0x000000000000FF00ULL;
-    uint64_t doublePush = ((singlePush & rank2) << 8) & ~board.occupied_squares;
+    uint64_t rank3 = 0x0000000000FF0000ULL;
+    uint64_t doublePush = ((singlePush & rank3) << 8) & ~board.occupied_squares;
     moves |= doublePush;
 
     // Captures
@@ -27,7 +27,7 @@ Bitboard wpawn_moves(Players player, Board board, uint64_t square)
 
     return moves;
 }
-Bitboard bpawn_moves(Players player, Board board, uint64_t square)
+Bitboard bpawn_moves(Board board, uint64_t square)
 {
     Bitboard pawnPlace = (1ULL << square);
     Bitboard moves = 0ULL;
@@ -37,13 +37,13 @@ Bitboard bpawn_moves(Players player, Board board, uint64_t square)
     moves |= singlePush;
 
     // Double push (only from rank 2 → rank 4)
-    uint64_t rank7 = 0x00FF000000000000ULL;
-    uint64_t doublePush = ((singlePush & rank7) >> 8) & ~board.occupied_squares;
+    uint64_t rank6 = 0x0000FF0000000000ULL;
+    uint64_t doublePush = ((singlePush & rank6) >> 8) & ~board.occupied_squares;
     moves |= doublePush;
 
     // Captures
-    uint64_t leftCapture  = (pawnPlace >> 7) & board.black_occupied & notA;
-    uint64_t rightCapture = (pawnPlace >> 9) & board.black_occupied & notH;
+    uint64_t leftCapture  = (pawnPlace >> 9) & board.white_occupied & notA;
+    uint64_t rightCapture = (pawnPlace >> 7) & board.white_occupied & notH;
     moves |= leftCapture | rightCapture;
 
     return moves;
@@ -67,6 +67,10 @@ Bitboard rook_moves(Players player, Board board, uint64_t square)
             }
             break; // stop at first occupied square
         }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
+        }
     }
 
     // Down
@@ -81,6 +85,10 @@ Bitboard rook_moves(Players player, Board board, uint64_t square)
                 moves |= (1ULL << sq);
             }
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 
@@ -97,6 +105,10 @@ Bitboard rook_moves(Players player, Board board, uint64_t square)
             }
             break;
         }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
+        }
     }
 
     // Left
@@ -111,6 +123,10 @@ Bitboard rook_moves(Players player, Board board, uint64_t square)
                 moves |= (1ULL << sq);
             }
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 
