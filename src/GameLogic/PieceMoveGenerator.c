@@ -145,12 +145,15 @@ Bitboard bishop_moves(Players player, Board board, uint64_t square)
         
         if (board.occupied_squares & (1ULL << sq))
         {
-            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER) {
+            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER ||
+                board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) 
                 moves |= (1ULL << sq);
-            } else if (board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) {
-                moves |= (1ULL << sq);
-            }
+            
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 
@@ -161,12 +164,15 @@ Bitboard bishop_moves(Players player, Board board, uint64_t square)
         
         if (board.occupied_squares & (1ULL << sq))
         {
-            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER) {
+            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER ||
+                board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) 
                 moves |= (1ULL << sq);
-            } else if (board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) {
-                moves |= (1ULL << sq);
-            }
+            
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 
@@ -177,12 +183,15 @@ Bitboard bishop_moves(Players player, Board board, uint64_t square)
         
         if (board.occupied_squares & (1ULL << sq))
         {
-            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER) {
+            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER ||
+                board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) 
                 moves |= (1ULL << sq);
-            } else if (board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) {
-                moves |= (1ULL << sq);
-            }
+
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 
@@ -193,12 +202,15 @@ Bitboard bishop_moves(Players player, Board board, uint64_t square)
         
         if (board.occupied_squares & (1ULL << sq))
         {
-            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER) {
+            if (board.black_occupied & (1ULL << sq) && player == WHITE_PLAYER ||
+                board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) 
                 moves |= (1ULL << sq);
-            } else if (board.white_occupied & (1ULL << sq) && player == BLACK_PLAYER) {
-                moves |= (1ULL << sq);
-            }
+
             break;
+        }
+        else // empty square
+        {
+            moves |= (1ULL << sq);
         }
     }
 

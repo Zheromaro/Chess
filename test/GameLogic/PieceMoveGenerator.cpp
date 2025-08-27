@@ -179,7 +179,7 @@ TEST_P(RookGenerator, rook_moves) {
     Bitboard movesW = 0;
     Bitboard movesB = 0;
     place_piece(&(board.white_rooks), param.pieceSquare);
-    place_piece(&(board.black_rooks), param.pieceSquare);
+    place_piece(&(board2.black_rooks), param.pieceSquare);
     for (auto b : param.blockers) {
         place_piece(&(board.white_pawns), b);
         place_piece(&(board2.black_pawns), b);
@@ -238,6 +238,78 @@ INSTANTIATE_TEST_SUITE_P(DefaultCases, RookGenerator, ::testing::Values(
                                 ". . . . . . . 1 \n"
                                 ". . . . . . . 1 \n"
                                 ". . . . . . . 1 \n"},
+    MoveTestCaseStr{A5, {}, {}, 
+                                "1 . . . . . . . \n"
+                                "1 . . . . . . . \n"
+                                "1 . . . . . . . \n"
+                                ". 1 1 1 1 1 1 1 \n"
+                                "1 . . . . . . . \n"
+                                "1 . . . . . . . \n"
+                                "1 . . . . . . . \n"
+                                "1 . . . . . . . \n"},
+    MoveTestCaseStr{E8, {}, {}, 
+                                "1 1 1 1 . 1 1 1 \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"},
+    MoveTestCaseStr{H4, {}, {}, 
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . 1 \n"
+                                "1 1 1 1 1 1 1 . \n"
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . 1 \n"},
+    MoveTestCaseStr{D1, {}, {}, 
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"},
+    MoveTestCaseStr{D4, {}, {}, 
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"},
+    MoveTestCaseStr{D4, {}, {D2}, 
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {D2, D7}, 
+                                ". . . . . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {D2, D7, B4}, 
+                                ". . . . . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". 1 1 . 1 1 1 1 \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . . . . . \n"},
     MoveTestCaseStr{D4, {}, {D2, D7, B4, G4}, 
                                 ". . . . . . . . \n"
                                 ". . . 1 . . . . \n"
@@ -247,6 +319,15 @@ INSTANTIATE_TEST_SUITE_P(DefaultCases, RookGenerator, ::testing::Values(
                                 ". . . 1 . . . . \n"
                                 ". . . 1 . . . . \n"
                                 ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {D3, D5, C4, E4}, 
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
     MoveTestCaseStr{E5, {E2, E7, B5, G5}, {}, 
                                 ". . . . . . . . \n"
                                 ". . . . . . . . \n"
@@ -254,6 +335,624 @@ INSTANTIATE_TEST_SUITE_P(DefaultCases, RookGenerator, ::testing::Values(
                                 ". . 1 1 . 1 . . \n"
                                 ". . . . 1 . . . \n"
                                 ". . . . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{E5, {E4, E6, D5, F5}, {}, 
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{E5, {E2}, {E7}, 
+                                ". . . . . . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                "1 1 1 1 . 1 1 1 \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"}
+));
+
+TEST_P(BishopGenerator, bishop_moves) {
+    // arrange
+    const auto& param = GetParam();
+    init_board_empty(&board);
+    init_board_empty(&board2);
+    Bitboard movesW = 0;
+    Bitboard movesB = 0;
+    place_piece(&(board.white_bishops), param.pieceSquare);
+    place_piece(&(board2.black_bishops), param.pieceSquare);
+    for (auto b : param.blockers) {
+        place_piece(&(board.white_pawns), b);
+        place_piece(&(board2.black_pawns), b);
+    }
+    for (auto b : param.captures) {
+        place_piece(&(board.black_pawns), b);
+        place_piece(&(board2.white_pawns), b);
+    }
+    update_board(&board);
+    update_board(&board2);
+
+    // act
+    movesW = bishop_moves(playerW, board, param.pieceSquare);
+    movesB = bishop_moves(playerB, board2, param.pieceSquare);
+    
+    // expect
+    EXPECT_TRUE(BitboardEq(movesW, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
+}
+
+INSTANTIATE_TEST_SUITE_P(DefaultCases, BishopGenerator, ::testing::Values(
+    // {pawnSquare, blockers, captures, expectedMoves}
+    MoveTestCaseStr{A1, {}, {},
+                                ". . . . . . . 1 \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H1, {}, {},
+                                "1 . . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{A8, {}, {},
+                                ". . . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . . 1 \n"},
+    MoveTestCaseStr{H8, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                "1 . . . . . . . \n"},
+    MoveTestCaseStr{A4, {}, {},
+                                ". . . . 1 . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . . 1 . . . . \n"},
+    MoveTestCaseStr{D8, {}, {},
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                "1 . . . . . 1 . \n"
+                                ". . . . . . . 1 \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H4, {}, {},
+                                ". . . 1 . . . . \n"
+                                ". . . . 1 . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . 1 . . . \n"},
+    MoveTestCaseStr{D1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . 1 \n"
+                                "1 . . . . . 1 . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {},
+                                ". . . . . . . 1 \n"
+                                "1 . . . . . 1 . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                "1 . . . . . 1 . \n"},
+    MoveTestCaseStr{D4, {}, {B2, F2, B6, G7},
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {C3, C5, E3, E5},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B2, F2, B6, G7}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {C3, C5, E3, E5}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B2}, {F6},
+                                ". . . . . . . . \n"
+                                "1 . . . . . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"}
+));
+
+TEST_P(KnightGenerator, knight_moves) {
+    // arrange
+    const auto& param = GetParam();
+    init_board_empty(&board);
+    init_board_empty(&board2);
+    Bitboard movesW = 0;
+    Bitboard movesB = 0;
+    place_piece(&(board.white_knights), param.pieceSquare);
+    place_piece(&(board2.black_knights), param.pieceSquare);
+    for (auto b : param.blockers) {
+        place_piece(&(board.white_pawns), b);
+        place_piece(&(board2.black_pawns), b);
+    }
+    for (auto b : param.captures) {
+        place_piece(&(board.black_pawns), b);
+        place_piece(&(board2.white_pawns), b);
+    }
+    update_board(&board);
+    update_board(&board2);
+
+    // act
+    movesW = knight_moves(playerW, board, param.pieceSquare);
+    movesB = knight_moves(playerB, board2, param.pieceSquare);
+    
+    // expect
+    EXPECT_TRUE(BitboardEq(movesW, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
+}
+
+INSTANTIATE_TEST_SUITE_P(DefaultCases, KnightGenerator, ::testing::Values(
+    // {pawnSquare, blockers, captures, expectedMoves}
+    MoveTestCaseStr{A1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{A8, {}, {},
+                                ". . . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H8, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{A4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D8, {}, {},
+                                ". . . . . . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . . . . . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {B3, B5, C2, C6, E2, E6, F3, F5},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . . . . . . . \n"
+                                ". 1 . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B3, B5, C2, C6, E2, E6, F3, F5}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B3, B5}, {C2, C6},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . 1 . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . . . . . . . \n"}
+));
+
+TEST_P(QueenGenerator, queen_moves) {
+    // arrange
+    const auto& param = GetParam();
+    init_board_empty(&board);
+    init_board_empty(&board2);
+    Bitboard movesW = 0;
+    Bitboard movesB = 0;
+    place_piece(&(board.white_queen), param.pieceSquare);
+    place_piece(&(board2.black_queen), param.pieceSquare);
+    for (auto b : param.blockers) {
+        place_piece(&(board.white_pawns), b);
+        place_piece(&(board2.black_pawns), b);
+    }
+    for (auto b : param.captures) {
+        place_piece(&(board.black_pawns), b);
+        place_piece(&(board2.white_pawns), b);
+    }
+    update_board(&board);
+    update_board(&board2);
+
+    // act
+    movesW = queen_moves(playerW, board, param.pieceSquare);
+    movesB = queen_moves(playerB, board2, param.pieceSquare);
+    
+    // expect
+    EXPECT_TRUE(BitboardEq(movesW, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
+}
+
+INSTANTIATE_TEST_SUITE_P(DefaultCases, QueenGenerator, ::testing::Values(
+    // {pawnSquare, blockers, captures, expectedMoves}
+    MoveTestCaseStr{A1, {}, {},
+                                "1 . . . . . . 1 \n"
+                                "1 . . . . . 1 . \n"
+                                "1 . . . . 1 . . \n"
+                                "1 . . . 1 . . . \n"
+                                "1 . . 1 . . . . \n"
+                                "1 . 1 . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". 1 1 1 1 1 1 1 \n"},
+    MoveTestCaseStr{H1, {}, {},
+                                "1 . . . . . . 1 \n"
+                                ". 1 . . . . . 1 \n"
+                                ". . 1 . . . . 1 \n"
+                                ". . . 1 . . . 1 \n"
+                                ". . . . 1 . . 1 \n"
+                                ". . . . . 1 . 1 \n"
+                                ". . . . . . 1 1 \n"
+                                "1 1 1 1 1 1 1 . \n"},
+    MoveTestCaseStr{A8, {}, {},
+                                ". 1 1 1 1 1 1 1 \n"
+                                "1 1 . . . . . . \n"
+                                "1 . 1 . . . . . \n"
+                                "1 . . 1 . . . . \n"
+                                "1 . . . 1 . . . \n"
+                                "1 . . . . 1 . . \n"
+                                "1 . . . . . 1 . \n"
+                                "1 . . . . . . 1 \n"},
+    MoveTestCaseStr{H8, {}, {},
+                                "1 1 1 1 1 1 1 . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . 1 . 1 \n"
+                                ". . . . 1 . . 1 \n"
+                                ". . . 1 . . . 1 \n"
+                                ". . 1 . . . . 1 \n"
+                                ". 1 . . . . . 1 \n"
+                                "1 . . . . . . 1 \n"},
+    MoveTestCaseStr{A4, {}, {},
+                                "1 . . . 1 . . . \n"
+                                "1 . . 1 . . . . \n"
+                                "1 . 1 . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". 1 1 1 1 1 1 1 \n"
+                                "1 1 . . . . . . \n"
+                                "1 . 1 . . . . . \n"
+                                "1 . . 1 . . . . \n"},
+    MoveTestCaseStr{D8, {}, {},
+                                "1 1 1 . 1 1 1 1 \n"
+                                ". . 1 1 1 . . . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                "1 . . 1 . . 1 . \n"
+                                ". . . 1 . . . 1 \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"},
+    MoveTestCaseStr{H4, {}, {},
+                                ". . . 1 . . . 1 \n"
+                                ". . . . 1 . . 1 \n"
+                                ". . . . . 1 . 1 \n"
+                                ". . . . . . 1 1 \n"
+                                "1 1 1 1 1 1 1 . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . 1 . 1 \n"
+                                ". . . . 1 . . 1 \n"},
+    MoveTestCaseStr{D1, {}, {},
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . . \n"
+                                ". . . 1 . . . 1 \n"
+                                "1 . . 1 . . 1 . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"},
+    MoveTestCaseStr{D4, {}, {},
+                                ". . . 1 . . . 1 \n"
+                                "1 . . 1 . . 1 . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                "1 1 1 . 1 1 1 1 \n"
+                                ". . 1 1 1 . . . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                "1 . . 1 . . 1 . \n"},
+    MoveTestCaseStr{D4, {}, {B2, F2, B6, G7, D7, D2, G4, B4},
+                                ". . . . . . . . \n"
+                                ". . . 1 . . 1 . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". 1 1 . 1 1 1 . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {C3, C5, E3, E5, D3, C4, E4, D5},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B2, F2, B6, G7, D7, D2, G4, B4}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . 1 . 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . 1 . 1 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {C3, C5, E3, E5, D3, C4, E4, D5}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {B2, G4}, {F6, D2},
+                                ". . . 1 . . . . \n"
+                                "1 . . 1 . . . . \n"
+                                ". 1 . 1 . 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                "1 1 1 . 1 1 . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . 1 . 1 . . \n"
+                                ". . . . . . 1 . \n"}
+));
+
+TEST_P(KingGenerator, king_moves) {
+    // arrange
+    const auto& param = GetParam();
+    init_board_empty(&board);
+    init_board_empty(&board2);
+    Bitboard movesW = 0;
+    Bitboard movesB = 0;
+    place_piece(&(board.white_king), param.pieceSquare);
+    place_piece(&(board2.black_king), param.pieceSquare);
+    for (auto b : param.blockers) {
+        place_piece(&(board.white_pawns), b);
+        place_piece(&(board2.black_pawns), b);
+    }
+    for (auto b : param.captures) {
+        place_piece(&(board.black_pawns), b);
+        place_piece(&(board2.white_pawns), b);
+    }
+    update_board(&board);
+    update_board(&board2);
+
+    // act
+    movesW = king_moves(playerW, board, param.pieceSquare);
+    movesB = king_moves(playerB, board2, param.pieceSquare);
+    
+    // expect
+    EXPECT_TRUE(BitboardEq(movesW, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
+}
+
+INSTANTIATE_TEST_SUITE_P(DefaultCases, KingGenerator, ::testing::Values(
+    // {pawnSquare, blockers, captures, expectedMoves}
+    MoveTestCaseStr{A1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". 1 . . . . . . \n"},
+    MoveTestCaseStr{H1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . . 1 . \n"},
+    MoveTestCaseStr{A8, {}, {},
+                                ". 1 . . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H8, {}, {},
+                                ". . . . . . 1 . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{A4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". 1 . . . . . . \n"
+                                "1 1 . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D8, {}, {},
+                                ". . 1 . 1 . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{H4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . . 1 . \n"
+                                ". . . . . . 1 1 \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D1, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . 1 . 1 . . . \n"},
+    MoveTestCaseStr{D4, {}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {}, {C3, D3, E3, C4, E4, C5, D5, E5},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . 1 1 1 . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {C3, D3, E3, C4, E4, C5, D5, E5}, {},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"},
+    MoveTestCaseStr{D4, {D5, E5}, {C3, D3},
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . . . . . . . \n"
+                                ". . 1 . . . . . \n"
+                                ". . 1 . 1 . . . \n"
+                                ". . 1 1 1 . . . \n"
                                 ". . . . . . . . \n"
                                 ". . . . . . . . \n"}
 ));
