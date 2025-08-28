@@ -1,4 +1,4 @@
-.PHONY: install coverage test docs help
+.PHONY: help test_ctest test_direct test_dir clean build rebuild release run brun
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -61,9 +61,11 @@ test_dir: ## run only one test executable: make test_dir DIR=dir/name
 clean: ## clean the build directory
 	rm -rf build/
 
-build: clean ## clean the build directory and rebuild it
+build: ## creat or complete the build directory
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 
 	cmake --build build --config Release
+
+rebuild: clean build ## clean the build directory and rebuild it
 
 release: clean ## clean the build directory and rebuild it for release
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 -DCMAKE_BUILD_TYPE="Release"
@@ -71,3 +73,5 @@ release: clean ## clean the build directory and rebuild it for release
 
 run: ## run the project
 	./build/bin/Release/CHESS || ./build/bin/Debug/CHESS
+
+brun: build run ## build and run the project

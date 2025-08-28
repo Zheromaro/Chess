@@ -18,38 +18,40 @@ typedef enum {
 
 typedef uint64_t Bitboard;
 
+typedef enum Players {
+    WHITE_PLAYER,
+    BLACK_PLAYER
+} Players;
+
+typedef enum PieceType {
+    NONE = 0,
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING
+} PieceType;
+
 typedef struct Board
 {
-    // White pieces
-    Bitboard white_pawns;
-    Bitboard white_knights;
-    Bitboard white_bishops;
-    Bitboard white_rooks;
-    Bitboard white_queen;
-    Bitboard white_king;
-
-    // Black pieces
-    Bitboard black_pawns;
-    Bitboard black_knights;
-    Bitboard black_bishops;
-    Bitboard black_rooks;
-    Bitboard black_queen;
-    Bitboard black_king;
+    // pieces
+    Bitboard pieces[2][6]; // [color][piece_type]
 
     // Other
-    Bitboard cliked_square;
+    short cliked_square_index;
     Bitboard occupied_squares;
     Bitboard white_occupied;
     Bitboard black_occupied;
-    Bitboard abailable_moves;
+    Bitboard available_moves;
 } Board;
 
 void init_board(Board* board);
 void init_board_empty(Board* board);
-void click_on_square(Board* board, uint64_t square);
-void place_piece(Bitboard *board, uint64_t square);
-void remove_piece(Bitboard *board, uint64_t square);
-bool is_occupied(Bitboard board, uint64_t square);
+void click_on_square(Board* board, Players player, short square_index);
+void place_piece(Bitboard *board, short square);
+void remove_piece(Bitboard *board, short square);
+bool is_occupied(Bitboard board, short square);
 void update_board(Board* board);
 void print_bitboard(Bitboard board);
 

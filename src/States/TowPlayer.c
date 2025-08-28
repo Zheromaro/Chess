@@ -10,8 +10,7 @@
 //void Move(GameData *data, int row, int colum);
 
 GameData TowPlayerData = {
-    .GameState = STILL_PLAYING,
-    .currentPlayer = WHITE_PLAYER
+    .GameState = STILL_PLAYING
 };
 Board towPlayerBoard;
 
@@ -34,13 +33,16 @@ void TwoPlayerProcessInput(SDL_Event event)
         }
         break;
     case SDL_MOUSEBUTTONDOWN:
-        click_on_square(&towPlayerBoard, SQUARE(event.button.y / CELL_HEIGHT, event.button.x / CELL_WIDTH));
+        int row = event.button.y / CELL_HEIGHT; // invert y
+        int col = event.button.x / CELL_WIDTH;
+
+        click_on_square(&towPlayerBoard, WHITE_PLAYER, SQUARE(row, col));
         break;
     }
 }
 void TwoPlayerRender(SDL_Renderer *renderer)
 {
-    RenderingBoard(renderer, &TowPlayerData);
+    RenderingBoard(renderer, towPlayerBoard);
 }
 
 State twoPlayerState = {

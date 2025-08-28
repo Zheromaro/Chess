@@ -103,12 +103,12 @@ TEST_P(WPawnGenerator, wpawn_moves) {
     // arrange
     const auto& param = GetParam();
     Bitboard moves = 0;
-    place_piece(&(board.white_pawns), param.pieceSquare);
+    place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
     }
     update_board(&board);
 
@@ -140,12 +140,12 @@ TEST_P(BPawnGenerator, bpawn_moves) {
     // arrange
     const auto& param = GetParam();
     Bitboard moves = 0;
-    place_piece(&(board.black_pawns), param.pieceSquare);
+    place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.black_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.white_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
 
@@ -178,15 +178,16 @@ TEST_P(RookGenerator, rook_moves) {
     const auto& param = GetParam();
     Bitboard movesW = 0;
     Bitboard movesB = 0;
-    place_piece(&(board.white_rooks), param.pieceSquare);
-    place_piece(&(board2.black_rooks), param.pieceSquare);
+    
+    place_piece(&(board.pieces[WHITE_PLAYER][ROOK]), param.pieceSquare);
+    place_piece(&(board.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
-        place_piece(&(board2.black_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
-        place_piece(&(board2.white_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
     update_board(&board2);
@@ -364,15 +365,15 @@ TEST_P(BishopGenerator, bishop_moves) {
     init_board_empty(&board2);
     Bitboard movesW = 0;
     Bitboard movesB = 0;
-    place_piece(&(board.white_bishops), param.pieceSquare);
-    place_piece(&(board2.black_bishops), param.pieceSquare);
+    place_piece(&(board.pieces[WHITE_PLAYER][BISHOP]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][BISHOP]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
-        place_piece(&(board2.black_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
-        place_piece(&(board2.white_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
     update_board(&board2);
@@ -523,15 +524,15 @@ TEST_P(KnightGenerator, knight_moves) {
     init_board_empty(&board2);
     Bitboard movesW = 0;
     Bitboard movesB = 0;
-    place_piece(&(board.white_knights), param.pieceSquare);
-    place_piece(&(board2.black_knights), param.pieceSquare);
+    place_piece(&(board.pieces[WHITE_PLAYER][KNIGHT]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][KNIGHT]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
-        place_piece(&(board2.black_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
-        place_piece(&(board2.white_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
     update_board(&board2);
@@ -664,15 +665,15 @@ TEST_P(QueenGenerator, queen_moves) {
     init_board_empty(&board2);
     Bitboard movesW = 0;
     Bitboard movesB = 0;
-    place_piece(&(board.white_queen), param.pieceSquare);
-    place_piece(&(board2.black_queen), param.pieceSquare);
+    place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
-        place_piece(&(board2.black_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
-        place_piece(&(board2.white_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
     update_board(&board2);
@@ -823,15 +824,15 @@ TEST_P(KingGenerator, king_moves) {
     init_board_empty(&board2);
     Bitboard movesW = 0;
     Bitboard movesB = 0;
-    place_piece(&(board.white_king), param.pieceSquare);
-    place_piece(&(board2.black_king), param.pieceSquare);
+    place_piece(&(board.pieces[WHITE_PLAYER][KING]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][KING]), param.pieceSquare);
     for (auto b : param.blockers) {
-        place_piece(&(board.white_pawns), b);
-        place_piece(&(board2.black_pawns), b);
+        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
-        place_piece(&(board.black_pawns), b);
-        place_piece(&(board2.white_pawns), b);
+        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
     update_board(&board2);

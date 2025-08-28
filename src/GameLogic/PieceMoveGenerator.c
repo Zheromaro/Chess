@@ -6,7 +6,7 @@ const uint64_t notAB = 0xfcfcfcfcfcfcfcfcULL; // ~files A,B
 const uint64_t notH  = 0x7f7f7f7f7f7f7f7fULL; // ~file H
 const uint64_t notGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
-Bitboard wpawn_moves(Board board, uint64_t square)
+Bitboard wpawn_moves(Board board, short square)
 {
     Bitboard pawnPlace = (1ULL << square);
     Bitboard moves = 0ULL;
@@ -27,7 +27,7 @@ Bitboard wpawn_moves(Board board, uint64_t square)
 
     return moves;
 }
-Bitboard bpawn_moves(Board board, uint64_t square)
+Bitboard bpawn_moves(Board board, short square)
 {
     Bitboard pawnPlace = (1ULL << square);
     Bitboard moves = 0ULL;
@@ -48,7 +48,7 @@ Bitboard bpawn_moves(Board board, uint64_t square)
 
     return moves;
 }
-Bitboard rook_moves(Players player, Board board, uint64_t square)
+Bitboard rook_moves(Players player, Board board, short square)
 {
     Bitboard moves = 0ULL;
     int rank = square / 8;
@@ -132,7 +132,7 @@ Bitboard rook_moves(Players player, Board board, uint64_t square)
 
     return moves;
 }
-Bitboard bishop_moves(Players player, Board board, uint64_t square)
+Bitboard bishop_moves(Players player, Board board, short square)
 {
     Bitboard moves = 0ULL;
     int rank = square / 8;
@@ -216,7 +216,7 @@ Bitboard bishop_moves(Players player, Board board, uint64_t square)
 
     return moves;
 }
-Bitboard knight_moves(Players player, Board board, uint64_t square)
+Bitboard knight_moves(Players player, Board board, short square)
 {
     Bitboard bitboard = 1ULL << square;
     Bitboard moves = 0ULL;
@@ -237,11 +237,11 @@ Bitboard knight_moves(Players player, Board board, uint64_t square)
     
     return moves;
 }
-Bitboard queen_moves(Players player, Board board, uint64_t square)
+Bitboard queen_moves(Players player, Board board, short square)
 {
     return rook_moves(player, board, square) | bishop_moves(player, board, square);
 }
-Bitboard king_moves(Players player, Board board, uint64_t square)
+Bitboard king_moves(Players player, Board board, short square)
 {
     Bitboard bitboard = 1ULL << square;
     Bitboard moves = 0ULL;

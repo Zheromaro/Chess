@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "GameLogic/GameData.h"
+#include "GameLogic/Board.h"
 
 void ResetGame(GameData* data);
 void SwitchPlayer(Players* current);

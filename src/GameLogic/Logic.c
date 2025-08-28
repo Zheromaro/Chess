@@ -9,7 +9,6 @@ int MinMax(GameData* data, int depth, bool isMaximizing);
 void ResetGame(GameData* data)
 {
     data->GameState = STILL_PLAYING;
-    data->currentPlayer = WHITE_PLAYER;
 }
 void SwitchPlayer(Players* current)
 {

@@ -87,11 +87,6 @@ void pushState(State* newState, const char* format, ...)
                 *(ChessGameStates*)val = va_arg(args, ChessGameStates);
                 break;
             }
-            case 'P': {
-                val = malloc(sizeof(Players));
-                *(Players*)val = va_arg(args, Players);
-                break;
-            }
             case ' ': 
                 break;
             case '%': 

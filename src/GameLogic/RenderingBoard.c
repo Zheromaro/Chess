@@ -1,10 +1,10 @@
 #include "LoopLogic/image.h"
 #include "LoopLogic/State.h"
 #include "GameLogic/RenderingBoard.h"
-#include "GameLogic/Board.h"
 
-void RenderChessPieces(SDL_Renderer *renderer, Bitboard boards[12]);
-void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard board);
+void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare);
+void RenderChessPieces(SDL_Renderer *renderer, Board board);
+void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare);
 
 const float boardXPos = 9.2;
 const float boardYPos = 9.2;
@@ -28,7 +28,6 @@ SDL_Texture* whiteBishopTexture = NULL;
 SDL_Texture* whiteRookTexture = NULL;
 SDL_Texture* whiteKingTexture = NULL;
 SDL_Texture* whiteQueenTexture = NULL;
-SDL_Texture* PiecesTextures[12] = {NULL};
 char CircleOverlayImgPath[] = "assets/img/CircleOverlay.png";
 char BSOverlayImgPath[] = "assets/img/BlackSquareOverlay.png";
 char WSOverlayImgPath[] = "assets/img/WhiteSquareOverlay.png";
@@ -67,78 +66,88 @@ void GetXOImage(){
     whiteRookTexture = LoadTexture(whiteRookImgPath);
     whiteKingTexture = LoadTexture(whiteKingImgPath);
     whiteQueenTexture = LoadTexture(whiteQueenImgPath);
-
-    PiecesTextures[0]  = blackPawnTexture;
-    PiecesTextures[1]  = blackKnightTexture;
-    PiecesTextures[2]  = blackBishopTexture;
-    PiecesTextures[3]  = blackRookTexture;
-    PiecesTextures[4]  = blackKingTexture;
-    PiecesTextures[5]  = blackQueenTexture;
-    PiecesTextures[6]  = whitePawnTexture;
-    PiecesTextures[7]  = whiteKnightTexture;
-    PiecesTextures[8]  = whiteBishopTexture;
-    PiecesTextures[9]  = whiteRookTexture;
-    PiecesTextures[10] = whiteKingTexture;
-    PiecesTextures[11] = whiteQueenTexture;
 }
 
-void RenderingBoard(SDL_Renderer *renderer, const GameData *gameData)
+void RenderingBoard(SDL_Renderer *renderer, Board board)
 {
     SDL_RenderCopy(renderer, boardTexture, NULL, &WindowRect);
-    //RenderSelectedSquare(renderer, gameData->selectedSquare);
+    RenderSelectedSquare(renderer, board.cliked_square_index);
     SDL_RenderCopy(renderer, boardIndexTexture, NULL, &WindowRect);
-    //RenderChessPieces(renderer, gameData->board);
+    RenderChessPieces(renderer, board);
+    RenderAvailableSquare(renderer, board.available_moves);
 }
 
-// private 
-void RenderChessPieces(SDL_Renderer *renderer, Bitboard boards[12])
+// private
+void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare)
 {
-    int counter = 0;
-    Bitboard current_board = boards[0];
-    while (current_board) {
-        int square = __builtin_ctzll(current_board); // index of least significant set bit
-        
-        cellRect.x = boardXPos + (square % 8) * CELL_WIDTH;
-        cellRect.y = boardYPos + (square / 8) * CELL_HEIGHT;
-        SDL_RenderCopy(renderer, PiecesTextures[counter], NULL, &cellRect);
-        
-        current_board &= (current_board - 1); // clear the least significant 1 bit
-        while (current_board == 0 && counter <= 11)
-        {
-            current_board = boards[counter];
-            counter++;
-        }
-    }
-  
-}
-void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard board)
-{
-    
-    SDL_RenderCopy(renderer, BSOverlayTexture, NULL, &cellRect);
-    SDL_RenderCopy(renderer, WSOverlayTexture, NULL, &cellRect);
-
-    while (board) {
-        int square = __builtin_ctzll(board); // index of least significant set bit
-        int x = square % 8;
-        int y = square / 8;
-
-        cellRect.x = boardXPos + x * CELL_WIDTH;
-        cellRect.y = boardYPos + SDL_YUV_CONVERSION_AUTOMATIC * CELL_HEIGHT;
-        if (x % 2)
-        {
-            if (y % 2)
-                SDL_RenderCopy(renderer, BSOverlayTexture, NULL, &cellRect);
-            else
-                SDL_RenderCopy(renderer, WSOverlayTexture, NULL, &cellRect);
-        }
+    if (selectedSquare)
+    {
+        cellRect.x = boardXPos + (selectedSquare % 8) * CELL_WIDTH;
+        cellRect.y = boardYPos + (selectedSquare / 8) * CELL_HEIGHT;
+        if (selectedSquare % 2)
+            SDL_RenderCopy(renderer, BSOverlayTexture, NULL, &cellRect);
         else
-        {
-            if (y % 2)
-                SDL_RenderCopy(renderer, WSOverlayTexture, NULL, &cellRect);
-            else
-                SDL_RenderCopy(renderer, BSOverlayTexture, NULL, &cellRect);
-        }
+            SDL_RenderCopy(renderer, WSOverlayTexture, NULL, &cellRect);
+    } 
+}
+void RenderChessPieces(SDL_Renderer *renderer, Board board)
+{
+    for (int i = 0; i < 64; i++) {
+        uint64_t mask = 1ULL << i;     // make a mask with only bit i set
+        bool bpawn   = (board.pieces[BLACK_PLAYER][PAWN]   & mask) ? 1 : 0;  // check if that bit is set
+        bool bknight = (board.pieces[BLACK_PLAYER][KNIGHT] & mask) ? 1 : 0;
+        bool bbishop = (board.pieces[BLACK_PLAYER][BISHOP] & mask) ? 1 : 0;
+        bool brook   = (board.pieces[BLACK_PLAYER][ROOK]   & mask) ? 1 : 0;
+        bool bqueen  = (board.pieces[BLACK_PLAYER][QUEEN]  & mask) ? 1 : 0;
+        bool bking   = (board.pieces[BLACK_PLAYER][KING]   & mask) ? 1 : 0;
+        bool wpawn   = (board.pieces[WHITE_PLAYER][PAWN]   & mask) ? 1 : 0;
+        bool wknight = (board.pieces[WHITE_PLAYER][KNIGHT] & mask) ? 1 : 0;
+        bool wbishop = (board.pieces[WHITE_PLAYER][BISHOP] & mask) ? 1 : 0;
+        bool wrook   = (board.pieces[WHITE_PLAYER][ROOK]   & mask) ? 1 : 0;
+        bool wqueen  = (board.pieces[WHITE_PLAYER][QUEEN]  & mask) ? 1 : 0;
+        bool wking   = (board.pieces[WHITE_PLAYER][KING]   & mask) ? 1 : 0;
         
-        board &= (board - 1); // clear the least significant 1 bit
-    }    
+        cellRect.x = boardXPos + (i % 8) * CELL_WIDTH;
+        cellRect.y = boardYPos + (7 - (i / 8)) * CELL_HEIGHT;
+
+        if (bpawn)
+            SDL_RenderCopy(renderer, blackPawnTexture, NULL, &cellRect);
+        if (bknight)
+            SDL_RenderCopy(renderer, blackKnightTexture, NULL, &cellRect);
+        if (bbishop)
+            SDL_RenderCopy(renderer, blackBishopTexture, NULL, &cellRect);
+        if (brook)
+            SDL_RenderCopy(renderer, blackRookTexture, NULL, &cellRect);
+        if (bqueen)
+            SDL_RenderCopy(renderer, blackQueenTexture, NULL, &cellRect);
+        if (bking)
+            SDL_RenderCopy(renderer, blackKingTexture, NULL, &cellRect);
+        if (wpawn)
+            SDL_RenderCopy(renderer, whitePawnTexture, NULL, &cellRect);
+        if (wknight)
+            SDL_RenderCopy(renderer, whiteKnightTexture, NULL, &cellRect);
+        if (wbishop)
+            SDL_RenderCopy(renderer, whiteBishopTexture, NULL, &cellRect);
+        if (wrook)
+            SDL_RenderCopy(renderer, whiteRookTexture, NULL, &cellRect);
+        if (wqueen)
+            SDL_RenderCopy(renderer, whiteQueenTexture, NULL, &cellRect);
+        if (wking)
+            SDL_RenderCopy(renderer, whiteKingTexture, NULL, &cellRect);
+    }
+}
+void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare)
+{
+    if (!availableSquare) return;
+    
+    for (int i = 0; i < 64; i++) {
+        uint64_t mask = 1ULL << i;     // make a mask with only bit i set
+        bool sq = (availableSquare & mask) ? 1 : 0;
+        
+        cellRect.x = boardXPos + (i % 8) * CELL_WIDTH;
+        cellRect.y = boardYPos + (i / 8) * CELL_HEIGHT;
+
+        if (sq)
+            SDL_RenderCopy(renderer, CircleOverlayTexture, NULL, &cellRect);
+    }
 }

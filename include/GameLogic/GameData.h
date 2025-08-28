@@ -10,8 +10,8 @@
 #define NUM_ROW_COL 8
 #define BOARD_WIDTH (WINDOW_WIDTH * 0.97)
 #define BOARD_HEIGHT (WINDOW_WIDTH * 0.97)
-#define CELL_WIDTH ((BOARD_WIDTH) / NUM_ROW_COL)
-#define CELL_HEIGHT ((BOARD_HEIGHT) / NUM_ROW_COL)
+#define CELL_WIDTH (BOARD_WIDTH / NUM_ROW_COL)
+#define CELL_HEIGHT (BOARD_HEIGHT / NUM_ROW_COL)
 
 typedef enum ChessGameStates {
     STILL_PLAYING = 1,
@@ -19,17 +19,12 @@ typedef enum ChessGameStates {
     WHITE_PLAYER_WON = -2,
     DRAW = 0
 } ChessGameStates;
-typedef enum Players {
-    WHITE_PLAYER,
-    BLACK_PLAYER
-} Players;
 
 
 // structs
 typedef struct GameData
 {
     ChessGameStates GameState;
-    Players currentPlayer;
 } GameData;
 
 #endif

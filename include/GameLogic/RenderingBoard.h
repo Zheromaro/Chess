@@ -3,8 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include "GameLogic/GameData.h"
+#include "GameLogic/Board.h"
 
 void GetXOImage();
-void RenderingBoard(SDL_Renderer *renderer, const GameData *gameData);
+void RenderingBoard(SDL_Renderer *renderer, Board board);
 
 #endif
