@@ -108,7 +108,7 @@ void RenderChessPieces(SDL_Renderer *renderer, Board board)
         bool wking   = (board.pieces[WHITE_PLAYER][KING]   & mask) ? 1 : 0;
         
         cellRect.x = boardXPos + (i % 8) * CELL_WIDTH;
-        cellRect.y = boardYPos + (7 - (i / 8)) * CELL_HEIGHT;
+        cellRect.y = boardYPos + (i / 8) * CELL_HEIGHT;
 
         if (bpawn)
             SDL_RenderCopy(renderer, blackPawnTexture, NULL, &cellRect);

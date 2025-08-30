@@ -1,4 +1,4 @@
-#include "GameLogic/PieceMoveGenerator.h"
+#include "GameLogic/MoveGenerator.h"
 
 // Precomputed file masks to prevent wrapping
 const uint64_t notA  = 0xfefefefefefefefeULL; // ~file A
@@ -7,27 +7,6 @@ const uint64_t notH  = 0x7f7f7f7f7f7f7f7fULL; // ~file H
 const uint64_t notGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
 Bitboard wpawn_moves(Board board, short square)
-{
-    Bitboard pawnPlace = (1ULL << square);
-    Bitboard moves = 0ULL;
-
-    // Single push (forward 8)
-    uint64_t singlePush = (pawnPlace << 8) & ~board.occupied_squares;
-    moves |= singlePush;
-
-    // Double push (only from rank 2 → rank 4)
-    uint64_t rank3 = 0x0000000000FF0000ULL;
-    uint64_t doublePush = ((singlePush & rank3) << 8) & ~board.occupied_squares;
-    moves |= doublePush;
-
-    // Captures
-    uint64_t leftCapture  = (pawnPlace << 7) & board.black_occupied & notA;
-    uint64_t rightCapture = (pawnPlace << 9) & board.black_occupied & notH;
-    moves |= leftCapture | rightCapture;
-
-    return moves;
-}
-Bitboard bpawn_moves(Board board, short square)
 {
     Bitboard pawnPlace = (1ULL << square);
     Bitboard moves = 0ULL;
@@ -42,8 +21,29 @@ Bitboard bpawn_moves(Board board, short square)
     moves |= doublePush;
 
     // Captures
-    uint64_t leftCapture  = (pawnPlace >> 9) & board.white_occupied & notA;
-    uint64_t rightCapture = (pawnPlace >> 7) & board.white_occupied & notH;
+    uint64_t leftCapture  = (pawnPlace >> 7) & board.white_occupied & notA;
+    uint64_t rightCapture = (pawnPlace >> 9) & board.white_occupied & notH;
+    moves |= leftCapture | rightCapture;
+
+    return moves;
+}
+Bitboard bpawn_moves(Board board, short square)
+{
+    Bitboard pawnPlace = (1ULL << square);
+    Bitboard moves = 0ULL;
+
+    // Single push (forward 8)
+    uint64_t singlePush = (pawnPlace << 8) & ~board.occupied_squares;
+    moves |= singlePush;
+
+    // Double push (only from rank 7 → rank 5)
+    uint64_t rank3 = 0x0000000000FF0000ULL;
+    uint64_t doublePush = ((singlePush & rank3) << 8) & ~board.occupied_squares;
+    moves |= doublePush;
+
+    // Captures
+    uint64_t leftCapture  = (pawnPlace << 7) & board.black_occupied & notA;
+    uint64_t rightCapture = (pawnPlace << 9) & board.black_occupied & notH;
     moves |= leftCapture | rightCapture;
 
     return moves;

@@ -23,19 +23,18 @@ typedef enum Players {
     BLACK_PLAYER
 } Players;
 
-typedef enum PieceType {
-    NONE = 0,
-    PAWN,
+typedef enum PieceType{
+    PAWN = 0,
     KNIGHT,
     BISHOP,
     ROOK,
     QUEEN,
-    KING
+    KING,
+    NONE
 } PieceType;
 
 typedef struct Board
 {
-    // pieces
     Bitboard pieces[2][6]; // [color][piece_type]
 
     // Other
@@ -48,7 +47,6 @@ typedef struct Board
 
 void init_board(Board* board);
 void init_board_empty(Board* board);
-void click_on_square(Board* board, Players player, short square_index);
 void place_piece(Bitboard *board, short square);
 void remove_piece(Bitboard *board, short square);
 bool is_occupied(Bitboard board, short square);

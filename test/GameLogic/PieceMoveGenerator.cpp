@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include "GameLogic/PieceMoveGenerator.h"
+#include "GameLogic/MoveGenerator.h"
 #include "GameLogic/Board.h"
 #include <stdio.h>
 }
@@ -121,19 +121,19 @@ TEST_P(WPawnGenerator, wpawn_moves) {
 
 INSTANTIATE_TEST_SUITE_P(DefaultCases, WPawnGenerator, ::testing::Values(
     // {pawnSquare, blockers, captures, expectedMoves}
-    MoveTestCase{E2, {}, {}, (1ULL << E3) | (1ULL << E4)}, 
-    MoveTestCase{E2, {E4}, {}, (1ULL << E3)},
-    MoveTestCase{E2, {E3}, {}, 0},
-    MoveTestCase{E2, {}, {D3, F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3) | (1ULL << F3)},
-    MoveTestCase{E2, {E3}, {D3, F3}, (1ULL << D3) | (1ULL << F3)},
-    MoveTestCase{E2, {E4}, {D3, F3}, (1ULL << E3) | (1ULL << D3) | (1ULL << F3)},
-    MoveTestCase{E2, {}, {D3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3)},
-    MoveTestCase{E2, {}, {F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << F3)},
-    MoveTestCase{E2, {F3}, {D3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3)},
-    MoveTestCase{E2, {D3}, {F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << F3)},
-    MoveTestCase{E3, {}, {}, (1ULL << E4)},
-    MoveTestCase{E3, {E4}, {}, 0},
-    MoveTestCase{E8, {}, {}, 0}
+    MoveTestCase{E7, {}, {}, (1ULL << E6) | (1ULL << E5)}, 
+    MoveTestCase{E7, {E5}, {}, (1ULL << E6)},
+    MoveTestCase{E7, {E6}, {}, 0},
+    MoveTestCase{E7, {}, {D6, F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6) | (1ULL << F6)},
+    MoveTestCase{E7, {E5}, {D6, F6}, (1ULL << E6) | (1ULL << D6) | (1ULL << F6)},
+    MoveTestCase{E7, {E6}, {D6, F6}, (1ULL << D6) | (1ULL << F6)},
+    MoveTestCase{E7, {}, {D6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6)},
+    MoveTestCase{E7, {}, {F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << F6)},
+    MoveTestCase{E7, {F6}, {D6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6)},
+    MoveTestCase{E7, {D6}, {F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << F6)},
+    MoveTestCase{E6, {}, {}, (1ULL << E5)},
+    MoveTestCase{E6, {E5}, {}, 0},
+    MoveTestCase{E1, {}, {}, 0}
 ));
 
 TEST_P(BPawnGenerator, bpawn_moves) {
@@ -158,19 +158,19 @@ TEST_P(BPawnGenerator, bpawn_moves) {
 
 INSTANTIATE_TEST_SUITE_P(DefaultCases, BPawnGenerator, ::testing::Values(
     // {pawnSquare, blockers, captures, expectedMoves}
-    MoveTestCase{E7, {}, {}, (1ULL << E6) | (1ULL << E5)}, 
-    MoveTestCase{E7, {E5}, {}, (1ULL << E6)},
-    MoveTestCase{E7, {E6}, {}, 0},
-    MoveTestCase{E7, {}, {D6, F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6) | (1ULL << F6)},
-    MoveTestCase{E7, {E5}, {D6, F6}, (1ULL << E6) | (1ULL << D6) | (1ULL << F6)},
-    MoveTestCase{E7, {E6}, {D6, F6}, (1ULL << D6) | (1ULL << F6)},
-    MoveTestCase{E7, {}, {D6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6)},
-    MoveTestCase{E7, {}, {F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << F6)},
-    MoveTestCase{E7, {F6}, {D6}, (1ULL << E6) | (1ULL << E5) | (1ULL << D6)},
-    MoveTestCase{E7, {D6}, {F6}, (1ULL << E6) | (1ULL << E5) | (1ULL << F6)},
-    MoveTestCase{E6, {}, {}, (1ULL << E5)},
-    MoveTestCase{E6, {E5}, {}, 0},
-    MoveTestCase{E1, {}, {}, 0}
+    MoveTestCase{E2, {}, {}, (1ULL << E3) | (1ULL << E4)}, 
+    MoveTestCase{E2, {E4}, {}, (1ULL << E3)},
+    MoveTestCase{E2, {E3}, {}, 0},
+    MoveTestCase{E2, {}, {D3, F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3) | (1ULL << F3)},
+    MoveTestCase{E2, {E3}, {D3, F3}, (1ULL << D3) | (1ULL << F3)},
+    MoveTestCase{E2, {E4}, {D3, F3}, (1ULL << E3) | (1ULL << D3) | (1ULL << F3)},
+    MoveTestCase{E2, {}, {D3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3)},
+    MoveTestCase{E2, {}, {F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << F3)},
+    MoveTestCase{E2, {F3}, {D3}, (1ULL << E3) | (1ULL << E4) | (1ULL << D3)},
+    MoveTestCase{E2, {D3}, {F3}, (1ULL << E3) | (1ULL << E4) | (1ULL << F3)},
+    MoveTestCase{E3, {}, {}, (1ULL << E4)},
+    MoveTestCase{E3, {E4}, {}, 0},
+    MoveTestCase{E8, {}, {}, 0}
 ));
 
 TEST_P(RookGenerator, rook_moves) {
@@ -180,7 +180,7 @@ TEST_P(RookGenerator, rook_moves) {
     Bitboard movesB = 0;
     
     place_piece(&(board.pieces[WHITE_PLAYER][ROOK]), param.pieceSquare);
-    place_piece(&(board.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
     for (auto b : param.blockers) {
         place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
         place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);

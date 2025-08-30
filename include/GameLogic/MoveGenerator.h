@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "GameLogic/Board.h"
-#include "GameLogic/GameData.h"
 
 Bitboard bpawn_moves(Board board, short square);
 Bitboard wpawn_moves(Board board, short square);

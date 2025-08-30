@@ -69,31 +69,6 @@ TEST(BoardBasics_TEST, init_board_empty)
     EXPECT_EQ(board.cliked_square_index , 0);
 }
 
-TEST_F(Board_TEST, click_on_square)
-{
-    //// arrange
-    //int square1 = A1;
-    //int square2 = B1;
-
-    //// act
-    //click_on_square(&board, square1);
-
-    //// expect
-    //EXPECT_EQ(board.cliked_square_index, square1);
-
-    //// act
-    //click_on_square(&board, square2);
-
-    //// expect
-    //EXPECT_EQ(board.cliked_square_index, square2);
-
-    //// act
-    //click_on_square(&board, square2);
-
-    //// expect
-    //EXPECT_EQ(board.cliked_square_index, 0);
-}
-
 TEST_F(Board_TEST, place_piece)
 {
     // arrange
@@ -126,12 +101,6 @@ TEST_F(Board_TEST, remove_piece)
 
     // expect
     EXPECT_EQ(board.pieces[BLACK_PLAYER][PAWN], (1ULL << square1));
-
-    // act
-    remove_piece(&(board.pieces[BLACK_PLAYER][PAWN]), square1);
-
-    // expect
-    EXPECT_EQ(board.pieces[BLACK_PLAYER][PAWN], 0);
 
     // act
     remove_piece(&(board.pieces[BLACK_PLAYER][PAWN]), square1);

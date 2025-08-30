@@ -3,8 +3,8 @@
 #include "LoopLogic/audio.h"
 #include "LoopLogic/State.h"
 #include "GameLogic/GameData.h"
-#include "GameLogic/Logic.h"
 #include "GameLogic/Board.h"
+#include "GameLogic/MoveAction.h"
 #include "GameLogic/RenderingBoard.h"
 
 //void Move(GameData *data, int row, int colum);
