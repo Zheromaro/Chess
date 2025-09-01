@@ -1,6 +1,6 @@
 #include "LoopLogic/image.h"
 #include "LoopLogic/State.h"
-#include "GameLogic/RenderingBoard.h"
+#include "GameLogic/BoardRendering.h"
 
 void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare);
 void RenderChessPieces(SDL_Renderer *renderer, Board board);
@@ -68,7 +68,7 @@ void GetXOImage(){
     whiteQueenTexture = LoadTexture(whiteQueenImgPath);
 }
 
-void RenderingBoard(SDL_Renderer *renderer, Board board)
+void BoardRendering(SDL_Renderer *renderer, Board board)
 {
     SDL_RenderCopy(renderer, boardTexture, NULL, &WindowRect);
     RenderSelectedSquare(renderer, board.cliked_square_index);

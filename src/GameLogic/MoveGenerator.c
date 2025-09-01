@@ -16,13 +16,13 @@ Bitboard wpawn_moves(Board board, short square)
     moves |= singlePush;
 
     // Double push (only from rank 2 → rank 4)
-    uint64_t rank6 = 0x0000FF0000000000ULL;
-    uint64_t doublePush = ((singlePush & rank6) >> 8) & ~board.occupied_squares;
+    uint64_t rank3 = 0x0000FF0000000000ULL;
+    uint64_t doublePush = ((singlePush & rank3) >> 8) & ~board.occupied_squares;
     moves |= doublePush;
 
     // Captures
-    uint64_t leftCapture  = (pawnPlace >> 7) & board.white_occupied & notA;
-    uint64_t rightCapture = (pawnPlace >> 9) & board.white_occupied & notH;
+    uint64_t leftCapture  = (pawnPlace >> 7) & board.black_occupied & notA;
+    uint64_t rightCapture = (pawnPlace >> 9) & board.black_occupied & notH;
     moves |= leftCapture | rightCapture;
 
     return moves;
@@ -37,13 +37,13 @@ Bitboard bpawn_moves(Board board, short square)
     moves |= singlePush;
 
     // Double push (only from rank 7 → rank 5)
-    uint64_t rank3 = 0x0000000000FF0000ULL;
-    uint64_t doublePush = ((singlePush & rank3) << 8) & ~board.occupied_squares;
+    uint64_t rank6 = 0x0000000000FF0000ULL;
+    uint64_t doublePush = ((singlePush & rank6) << 8) & ~board.occupied_squares;
     moves |= doublePush;
 
     // Captures
-    uint64_t leftCapture  = (pawnPlace << 7) & board.black_occupied & notA;
-    uint64_t rightCapture = (pawnPlace << 9) & board.black_occupied & notH;
+    uint64_t leftCapture  = (pawnPlace << 7) & board.white_occupied & notA;
+    uint64_t rightCapture = (pawnPlace << 9) & board.white_occupied & notH;
     moves |= leftCapture | rightCapture;
 
     return moves;

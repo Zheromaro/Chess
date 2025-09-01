@@ -5,7 +5,7 @@
 #include "LoopLogic/text.h"
 #include "LoopLogic/appSettings.h"
 #include "LoopLogic/State.h"
-#include "GameLogic/GameData.h"
+#include "GameConstant.h"
 
 
 SDL_Window *window = NULL;
@@ -14,7 +14,7 @@ bool gameIsRunning = false;
 bool reload = false;
 
 bool initialize_window(void){
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0){ 
+    if (SDL_Init(SDL_INIT_VIDEO) != 0){ 
         fprintf(stderr, "Error initializing SDL. \n");
         return false;
     }

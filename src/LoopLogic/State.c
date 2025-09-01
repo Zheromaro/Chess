@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <Stack.h>
-#include "GameLogic/GameData.h"
+#include "GameConstant.h"
 #include "LoopLogic/State.h"
 #include "LoopLogic/appSettings.h"
 
@@ -80,11 +80,6 @@ void pushState(State* newState, const char* format, ...)
                 char* src = va_arg(args, char*);
                 val = malloc(strlen(src) + 1);
                 strcpy(val, src);
-                break;
-            }
-            case 'G': {
-                val = malloc(sizeof(ChessGameStates));
-                *(ChessGameStates*)val = va_arg(args, ChessGameStates);
                 break;
             }
             case ' ': 

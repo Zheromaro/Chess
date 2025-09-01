@@ -18,6 +18,13 @@ typedef enum {
 
 typedef uint64_t Bitboard;
 
+typedef enum ChessGameStates {
+    STILL_PLAYING = 1,
+    BLACK_PLAYER_WON = 2,
+    WHITE_PLAYER_WON = -2,
+    DRAW = 0
+} ChessGameStates;
+
 typedef enum Players {
     WHITE_PLAYER,
     BLACK_PLAYER

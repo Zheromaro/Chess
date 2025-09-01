@@ -10,6 +10,7 @@ set(exe_sources
 )
 
 file(GLOB_RECURSE headers 
+    ${PROJECT_SOURCE_DIR}/include/*.h
     ${PROJECT_SOURCE_DIR}/include/LoopLogic/*.h
     ${PROJECT_SOURCE_DIR}/include/GameLogic/*.h
 )

@@ -13,18 +13,4 @@
 #define CELL_WIDTH (BOARD_WIDTH / NUM_ROW_COL)
 #define CELL_HEIGHT (BOARD_HEIGHT / NUM_ROW_COL)
 
-typedef enum ChessGameStates {
-    STILL_PLAYING = 1,
-    BLACK_PLAYER_WON = 2,
-    WHITE_PLAYER_WON = -2,
-    DRAW = 0
-} ChessGameStates;
-
-
-// structs
-typedef struct GameData
-{
-    ChessGameStates GameState;
-} GameData;
-
 #endif

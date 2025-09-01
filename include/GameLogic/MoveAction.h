@@ -5,6 +5,6 @@
 #include <stdbool.h>
 #include "GameLogic/MoveGenerator.h"
 
-void click_on_square(Board* board, Players player, short square_index);
+void click_on_square(Board* board, Players* player, short square_index);
 
 #endif

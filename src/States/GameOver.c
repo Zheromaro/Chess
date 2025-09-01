@@ -3,7 +3,7 @@
 #include "LoopLogic/audio.h"
 #include "LoopLogic/text.h"
 #include "LoopLogic/appSettings.h"
-#include "GameLogic/GameData.h"
+#include "GameConstant.h"
 #include "LoopLogic/State.h"
 
 //ChessGameStates gameState = DRAW;  

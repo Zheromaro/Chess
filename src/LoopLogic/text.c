@@ -2,7 +2,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "LoopLogic/text.h"
 #include "LoopLogic/image.h"
-#include "GameLogic/GameData.h"
+#include "GameConstant.h"
 
 
 SDL_Color blackColor = {0, 0, 0};

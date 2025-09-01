@@ -5,21 +5,25 @@
 
 PieceType get_piece_type(Board board, short square, Players owner);
 Bitboard get_piece_moves(Board board, short square, Players owner, PieceType piece);
-bool move_piece(Board *board, short from, short to, Players owner, PieceType piece);
+bool move_piece(Board *board, short from, short to, Players *owner, PieceType piece);
+void switch_player(Players* current);
 
-void click_on_square(Board* board, Players player, short square_index) {
-    PieceType oldPieceType = get_piece_type(*board, board->cliked_square_index, player);
+
+void click_on_square(Board* board, Players* player, short square_index) {
+    update_board(board);
+    PieceType oldPieceType = get_piece_type(*board, board->cliked_square_index, *player);
     if (move_piece(board, board->cliked_square_index, square_index, player, oldPieceType)) return;
 
     board->available_moves = 0;
     if (board->cliked_square_index == square_index)
-        board->cliked_square_index = 0;
+    board->cliked_square_index = 0;
     else
     {
         board->cliked_square_index = square_index;
-        PieceType pieceType = get_piece_type(*board, square_index, player);
-        board->available_moves = get_piece_moves(*board, square_index, player, pieceType);
+        PieceType pieceType = get_piece_type(*board, square_index, *player);
+        board->available_moves = get_piece_moves(*board, square_index, *player, pieceType);
     }
+    update_board(board);
 }
 
 // private
@@ -51,23 +55,30 @@ PieceType get_piece_type(Board board, short square, Players owner) {
 
     return NONE; // empty square
 }
-bool move_piece(Board *board, short from, short to, Players owner, PieceType piece) {
+bool move_piece(Board *board, short from, short to, Players *owner, PieceType piece) {
     if (!(board->available_moves & (1ULL << to))) return false;
-    update_board(board);
-
+    
     // Capture opponent piece if exists
     for (int i = 0; i < 6; i++)
     {
-        if (is_occupied(board->pieces[!owner][i], to))
+        if (is_occupied(board->pieces[!(*owner)][i], to))
         {
-            remove_piece(&(board->pieces[!owner][i]), to);
+            remove_piece(&(board->pieces[!(*owner)][i]), to);
             break;
         }
     }
-    remove_piece(&(board->pieces[owner][piece]), from);
-    place_piece (&(board->pieces[owner][piece]), to);
+    remove_piece(&(board->pieces[*owner][piece]), from);
+    place_piece (&(board->pieces[*owner][piece]), to);
+    switch_player(owner);
     board->cliked_square_index = 0;
     board->available_moves = 0;
     
     return true;
+}
+void switch_player(Players* current)
+{
+    if (*current == WHITE_PLAYER)
+        *current = BLACK_PLAYER;
+    else if (*current == BLACK_PLAYER)
+        *current = WHITE_PLAYER;
 }

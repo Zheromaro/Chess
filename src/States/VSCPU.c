@@ -3,9 +3,8 @@
 #include "LoopLogic/image.h"
 #include "LoopLogic/audio.h"
 #include "LoopLogic/State.h"
-#include "GameLogic/GameData.h"
-#include "GameLogic/Logic.h"
-#include "GameLogic/RenderingBoard.h"
+#include "GameConstant.h"
+#include "GameLogic/BoardRendering.h"
 
 //void PlayerMove(GameData *data, int row, int colum);
 //void CPUMove(GameData *data);
@@ -65,7 +64,7 @@
 //}
 //void VScpuRender(SDL_Renderer *renderer)
 //{
-//    RenderingBoard(renderer, &VScpuData);
+//    BoardRendering(renderer, &VScpuData);
 //}
 //
 //State VScpuState = {
