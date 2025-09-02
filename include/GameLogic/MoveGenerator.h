@@ -5,8 +5,7 @@
 #include <stdbool.h>
 #include "GameLogic/Board.h"
 
-Bitboard bpawn_moves(Board board, short square);
-Bitboard wpawn_moves(Board board, short square);
+Bitboard pawn_moves(Players player, Board board, short square);
 Bitboard rook_moves(Players player, Board board, short square);
 Bitboard bishop_moves(Players player, Board board, short square);
 Bitboard knight_moves(Players player, Board board, short square);

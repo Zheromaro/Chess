@@ -45,7 +45,9 @@ typedef struct Board
     Bitboard pieces[2][6]; // [color][piece_type]
 
     // Other
+    bool fliped;
     short cliked_square_index;
+    short en_passant_square;
     Bitboard occupied_squares;
     Bitboard white_occupied;
     Bitboard black_occupied;

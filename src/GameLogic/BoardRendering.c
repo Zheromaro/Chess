@@ -1,10 +1,10 @@
 #include "LoopLogic/image.h"
-#include "LoopLogic/State.h"
 #include "GameLogic/BoardRendering.h"
+#include "GameConstant.h"
 
-void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare);
+void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare, bool fliped);
 void RenderChessPieces(SDL_Renderer *renderer, Board board);
-void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare);
+void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare, bool fliped);
 
 const float boardXPos = 9.2;
 const float boardYPos = 9.2;
@@ -71,19 +71,21 @@ void GetXOImage(){
 void BoardRendering(SDL_Renderer *renderer, Board board)
 {
     SDL_RenderCopy(renderer, boardTexture, NULL, &WindowRect);
-    RenderSelectedSquare(renderer, board.cliked_square_index);
+    RenderSelectedSquare(renderer, board.cliked_square_index, board.fliped);
     SDL_RenderCopy(renderer, boardIndexTexture, NULL, &WindowRect);
     RenderChessPieces(renderer, board);
-    RenderAvailableSquare(renderer, board.available_moves);
+    RenderAvailableSquare(renderer, board.available_moves, board.fliped);
 }
 
 // private
-void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare)
+void RenderSelectedSquare(SDL_Renderer *renderer, Bitboard selectedSquare, bool fliped)
 {
     if (selectedSquare)
     {
-        cellRect.x = boardXPos + (selectedSquare % 8) * CELL_WIDTH;
-        cellRect.y = boardYPos + (selectedSquare / 8) * CELL_HEIGHT;
+        int file = (selectedSquare % 8);
+        int rank = (fliped)? (7 - (selectedSquare / 8)) : (selectedSquare / 8);
+        cellRect.x = boardXPos + file * CELL_WIDTH;
+        cellRect.y = boardYPos + rank * CELL_HEIGHT;
         if (selectedSquare % 2)
             SDL_RenderCopy(renderer, BSOverlayTexture, NULL, &cellRect);
         else
@@ -107,8 +109,10 @@ void RenderChessPieces(SDL_Renderer *renderer, Board board)
         bool wqueen  = (board.pieces[WHITE_PLAYER][QUEEN]  & mask) ? 1 : 0;
         bool wking   = (board.pieces[WHITE_PLAYER][KING]   & mask) ? 1 : 0;
         
-        cellRect.x = boardXPos + (i % 8) * CELL_WIDTH;
-        cellRect.y = boardYPos + (i / 8) * CELL_HEIGHT;
+        int file = (i % 8);
+        int rank = (board.fliped)? (7 - (i / 8)) : (i / 8);
+        cellRect.x = boardXPos + file * CELL_WIDTH;
+        cellRect.y = boardYPos + rank * CELL_HEIGHT;
 
         if (bpawn)
             SDL_RenderCopy(renderer, blackPawnTexture, NULL, &cellRect);
@@ -136,7 +140,7 @@ void RenderChessPieces(SDL_Renderer *renderer, Board board)
             SDL_RenderCopy(renderer, whiteKingTexture, NULL, &cellRect);
     }
 }
-void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare)
+void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare, bool fliped)
 {
     if (!availableSquare) return;
     
@@ -144,8 +148,11 @@ void RenderAvailableSquare(SDL_Renderer *renderer, Bitboard availableSquare)
         uint64_t mask = 1ULL << i;     // make a mask with only bit i set
         bool sq = (availableSquare & mask) ? 1 : 0;
         
-        cellRect.x = boardXPos + (i % 8) * CELL_WIDTH;
-        cellRect.y = boardYPos + (i / 8) * CELL_HEIGHT;
+        int file = (i % 8);
+        int rank = (fliped)? (7 - (i / 8)) : (i / 8);
+
+        cellRect.x = boardXPos + file * CELL_WIDTH;
+        cellRect.y = boardYPos + rank * CELL_HEIGHT;
 
         if (sq)
             SDL_RenderCopy(renderer, CircleOverlayTexture, NULL, &cellRect);

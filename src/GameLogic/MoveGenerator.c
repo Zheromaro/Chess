@@ -1,50 +1,53 @@
 #include "GameLogic/MoveGenerator.h"
 
+static inline Bitboard shift(Bitboard bb, int shift);
+
 // Precomputed file masks to prevent wrapping
 const uint64_t notA  = 0xfefefefefefefefeULL; // ~file A
 const uint64_t notAB = 0xfcfcfcfcfcfcfcfcULL; // ~files A,B
 const uint64_t notH  = 0x7f7f7f7f7f7f7f7fULL; // ~file H
 const uint64_t notGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
-Bitboard wpawn_moves(Board board, short square)
-{
-    Bitboard pawnPlace = (1ULL << square);
+Bitboard pawn_moves(Players player, Board board, short square) {
+    Bitboard pawnPlace = 1ULL << square;
     Bitboard moves = 0ULL;
 
-    // Single push (forward 8)
-    uint64_t singlePush = (pawnPlace >> 8) & ~board.occupied_squares;
+    // Direction offsets
+    bool goingUp = (player == WHITE_PLAYER); // XOR to handle board flip
+    int forwardShift  = goingUp ? +8 : -8;
+    int leftCapShift  = goingUp ? +7 : -7;
+    int rightCapShift = goingUp ? +9 : -9;
+
+    Bitboard opponentOccupied = (player == WHITE_PLAYER) ? board.black_occupied : board.white_occupied;
+
+    // Single push
+    Bitboard singlePush = shift(pawnPlace, forwardShift) & ~board.occupied_squares;
     moves |= singlePush;
 
-    // Double push (only from rank 2 → rank 4)
-    uint64_t rank3 = 0x0000FF0000000000ULL;
-    uint64_t doublePush = ((singlePush & rank3) >> 8) & ~board.occupied_squares;
-    moves |= doublePush;
+    // Double push (only if pawn on starting rank)
+    Bitboard startRankMask = goingUp ? 0x000000000000FF00ULL   // rank 2
+                                     : 0x00FF000000000000ULL;  // rank 7
+
+    if (pawnPlace & startRankMask) {
+        Bitboard doublePush = shift(singlePush, forwardShift) & ~board.occupied_squares;
+        moves |= doublePush;
+    }
 
     // Captures
-    uint64_t leftCapture  = (pawnPlace >> 7) & board.black_occupied & notA;
-    uint64_t rightCapture = (pawnPlace >> 9) & board.black_occupied & notH;
+    Bitboard leftCapture  = shift(pawnPlace, leftCapShift)  & opponentOccupied & notA;
+    Bitboard rightCapture = shift(pawnPlace, rightCapShift) & opponentOccupied & notH;
     moves |= leftCapture | rightCapture;
 
-    return moves;
-}
-Bitboard bpawn_moves(Board board, short square)
-{
-    Bitboard pawnPlace = (1ULL << square);
-    Bitboard moves = 0ULL;
+    // En passant
+    if (board.en_passant_square != -1) {
+        Bitboard enPassantTarget = 1ULL << board.en_passant_square;
 
-    // Single push (forward 8)
-    uint64_t singlePush = (pawnPlace << 8) & ~board.occupied_squares;
-    moves |= singlePush;
+        if (shift(pawnPlace, leftCapShift) & enPassantTarget & notA)
+            moves |= shift(pawnPlace, leftCapShift);
 
-    // Double push (only from rank 7 → rank 5)
-    uint64_t rank6 = 0x0000000000FF0000ULL;
-    uint64_t doublePush = ((singlePush & rank6) << 8) & ~board.occupied_squares;
-    moves |= doublePush;
-
-    // Captures
-    uint64_t leftCapture  = (pawnPlace << 7) & board.white_occupied & notA;
-    uint64_t rightCapture = (pawnPlace << 9) & board.white_occupied & notH;
-    moves |= leftCapture | rightCapture;
+        if (shift(pawnPlace, rightCapShift) & enPassantTarget & notH)
+            moves |= shift(pawnPlace, rightCapShift);
+    }
 
     return moves;
 }
@@ -260,5 +263,40 @@ Bitboard king_moves(Players player, Board board, short square)
     else if (board.white_occupied & moves && player == WHITE_PLAYER)
         moves &= ~board.white_occupied;
 
+    // Castling TODO: check attacked squares and king/rook not moved
+    if (player == WHITE_PLAYER && square == 4) { // e1
+        // King-side (e1 → g1)
+        if (!(is_occupied(board.occupied_squares, 5) && is_occupied(board.occupied_squares, 5))) // f1,g1 empty 
+        {
+            moves |= (1ULL << 6); // g1
+        }
+
+        // Queen-side (e1 → c1)
+        if (!(board.occupied_squares & ((1ULL<<1) | (1ULL<<2) | (1ULL<<3)))) // b1,c1,d1 empty 
+        {
+            moves |= (1ULL << 2); // c1
+        }
+    }
+
+    if (player == BLACK_PLAYER && square == 60) { // e8
+        // King-side (e8 → g8)
+        if (!(board.occupied_squares & ((1ULL<<61) | (1ULL<<62)))) // f8,g8 empty
+        {
+            moves |= (1ULL << 62); // g8
+        }
+
+        // Queen-side (e8 → c8)
+        if (!(board.occupied_squares & ((1ULL<<57) | (1ULL<<58) | (1ULL<<59)))) // b8,c8,d8 empty
+        {
+            moves |= (1ULL << 58); // c8
+        }
+    }
+
     return moves;
+}
+
+// private
+static inline Bitboard shift(Bitboard bb, int shift)
+{
+    return (shift > 0) ? (bb << shift) : (bb >> -shift);
 }

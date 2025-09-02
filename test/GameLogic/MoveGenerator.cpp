@@ -102,24 +102,31 @@ class KingGenerator : public PieceMoveGenerator,
 TEST_P(WPawnGenerator, wpawn_moves) {
     // arrange
     const auto& param = GetParam();
-    Bitboard moves = 0;
+    Bitboard movesW = 0;
+    Bitboard movesB = 0;
+    
     place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), param.pieceSquare);
+    place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
     for (auto b : param.blockers) {
         place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[BLACK_PLAYER][PAWN]), b);
     }
     for (auto b : param.captures) {
         place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
+        place_piece(&(board2.pieces[WHITE_PLAYER][PAWN]), b);
     }
     update_board(&board);
 
     // act
-    moves = wpawn_moves(board, param.pieceSquare);
+    movesW = pawn_moves(playerW, board, param.pieceSquare);
+    movesB = pawn_moves(playerB, board, param.pieceSquare);
     
     // expect
-    EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesW, param.expectedMoves));
+    EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(DefaultCases, WPawnGenerator, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(DefaultCases, BPawnGenerator, ::testing::Values(
     // {pawnSquare, blockers, captures, expectedMoves}
     MoveTestCase{E7, {}, {}, (1ULL << E6) | (1ULL << E5)}, 
     MoveTestCase{E7, {E5}, {}, (1ULL << E6)},
@@ -136,27 +143,7 @@ INSTANTIATE_TEST_SUITE_P(DefaultCases, WPawnGenerator, ::testing::Values(
     MoveTestCase{E1, {}, {}, 0}
 ));
 
-TEST_P(BPawnGenerator, bpawn_moves) {
-    // arrange
-    const auto& param = GetParam();
-    Bitboard moves = 0;
-    place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
-    for (auto b : param.blockers) {
-        place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), b);
-    }
-    for (auto b : param.captures) {
-        place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), b);
-    }
-    update_board(&board);
-
-    // act
-    moves = bpawn_moves(board, param.pieceSquare);
-    
-    // expect
-    EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
-}
-
-INSTANTIATE_TEST_SUITE_P(DefaultCases, BPawnGenerator, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(DefaultCases, WPawnGenerator, ::testing::Values(
     // {pawnSquare, blockers, captures, expectedMoves}
     MoveTestCase{E2, {}, {}, (1ULL << E3) | (1ULL << E4)}, 
     MoveTestCase{E2, {E4}, {}, (1ULL << E3)},

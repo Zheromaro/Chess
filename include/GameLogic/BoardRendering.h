@@ -2,7 +2,6 @@
 #define RENDERING_BOARD_H
 
 #include <SDL2/SDL.h>
-#include "GameConstant.h"
 #include "GameLogic/Board.h"
 
 void GetXOImage();

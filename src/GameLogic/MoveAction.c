@@ -30,11 +30,8 @@ void click_on_square(Board* board, Players* player, short square_index) {
 Bitboard get_piece_moves(Board board, short square, Players owner, PieceType piece)
 {
     switch (piece) {
-        case NONE:    return 0; break;
-        case PAWN:
-            if      (owner == WHITE_PLAYER) return wpawn_moves(board, square);
-            else if (owner == BLACK_PLAYER) return bpawn_moves(board, square);
-            break;
+        case NONE:   return 0; break;
+        case PAWN:   return pawn_moves(owner, board, square);   break;
         case KNIGHT: return knight_moves(owner, board, square); break;
         case BISHOP: return bishop_moves(owner, board, square); break;
         case ROOK:   return rook_moves(owner, board, square);   break;
