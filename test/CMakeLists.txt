@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 #
 # Project details
 #
@@ -28,8 +32,9 @@ foreach(dir ${test_dirs})
   #
   # Set the compiler standard
   #
-
+  #///
   target_compile_features(${dir_name}_Test PUBLIC cxx_std_17)
+
 
   #
   # Load the desired unit testing framework

@@ -121,6 +121,7 @@ message(STATUS "Added all header and implementation files.\n")
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
+find_package(cJSON CONFIG REQUIRED)
 
 # include the external libraries
 include(cmake/ExternalLib.cmake)
@@ -128,6 +129,7 @@ include(cmake/ExternalLib.cmake)
 target_link_libraries( ${PROJECT_NAME}
     PRIVATE
         ${EXTERNAL_LIBS}
+        cjson
         $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
@@ -141,6 +143,7 @@ if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   target_link_libraries( ${PROJECT_NAME}_LIB
     PRIVATE
         ${EXTERNAL_LIBS}
+        cjson
         $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>

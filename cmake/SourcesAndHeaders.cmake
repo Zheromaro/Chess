@@ -2,6 +2,7 @@ file(GLOB_RECURSE sources
     ${PROJECT_SOURCE_DIR}/src/GameLogic/*.c
     ${PROJECT_SOURCE_DIR}/src/LoopLogic/*.c
     ${PROJECT_SOURCE_DIR}/src/States/*.c
+    ${PROJECT_SOURCE_DIR}/src/jsonReading.c
 )
 
 set(exe_sources

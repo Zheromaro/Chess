@@ -26,6 +26,7 @@ void init_board(Board* board)
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
     board->fliped = true;
+    board->castling_rights = 0b1111;
 
     update_board(board);
 }
@@ -54,6 +55,7 @@ void init_board_empty(Board* board)
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
     board->fliped = true;
+    board->castling_rights = 0b0000;
 
     update_board(board);
 }

@@ -13,7 +13,7 @@ Bitboard pawn_moves(Players player, Board board, short square) {
     Bitboard moves = 0ULL;
 
     // Direction offsets
-    bool goingUp = (player == WHITE_PLAYER); // XOR to handle board flip
+    bool goingUp = (player == WHITE_PLAYER);
     int forwardShift  = goingUp ? +8 : -8;
     int leftCapShift  = goingUp ? +7 : -7;
     int rightCapShift = goingUp ? +9 : -9;
@@ -42,11 +42,9 @@ Bitboard pawn_moves(Players player, Board board, short square) {
     if (board.en_passant_square != -1) {
         Bitboard enPassantTarget = 1ULL << board.en_passant_square;
 
-        if (shift(pawnPlace, leftCapShift) & enPassantTarget & notA)
-            moves |= shift(pawnPlace, leftCapShift);
-
-        if (shift(pawnPlace, rightCapShift) & enPassantTarget & notH)
-            moves |= shift(pawnPlace, rightCapShift);
+        Bitboard leftEP = shift(pawnPlace, leftCapShift)  & enPassantTarget & notA;            
+        Bitboard rightEP = shift(pawnPlace, rightCapShift) & enPassantTarget & notH;
+        moves |= leftEP | rightEP;
     }
 
     return moves;
@@ -266,13 +264,15 @@ Bitboard king_moves(Players player, Board board, short square)
     // Castling TODO: check attacked squares and king/rook not moved
     if (player == WHITE_PLAYER && square == 4) { // e1
         // King-side (e1 → g1)
-        if (!(is_occupied(board.occupied_squares, 5) && is_occupied(board.occupied_squares, 5))) // f1,g1 empty 
+        if (!(is_occupied(board.occupied_squares, 5) && is_occupied(board.occupied_squares, 5)) && // f1,g1 empty
+            board.castling_rights & WKING_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 6); // g1
         }
 
         // Queen-side (e1 → c1)
-        if (!(board.occupied_squares & ((1ULL<<1) | (1ULL<<2) | (1ULL<<3)))) // b1,c1,d1 empty 
+        if (!(board.occupied_squares & ((1ULL<<1) | (1ULL<<2) | (1ULL<<3))) && // b1,c1,d1 empty 
+            board.castling_rights & WQUEEN_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 2); // c1
         }
@@ -280,13 +280,15 @@ Bitboard king_moves(Players player, Board board, short square)
 
     if (player == BLACK_PLAYER && square == 60) { // e8
         // King-side (e8 → g8)
-        if (!(board.occupied_squares & ((1ULL<<61) | (1ULL<<62)))) // f8,g8 empty
+        if (!(board.occupied_squares & ((1ULL<<61) | (1ULL<<62))) && // f8,g8 empty
+            board.castling_rights & BKING_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 62); // g8
         }
 
         // Queen-side (e8 → c8)
-        if (!(board.occupied_squares & ((1ULL<<57) | (1ULL<<58) | (1ULL<<59)))) // b8,c8,d8 empty
+        if (!(board.occupied_squares & ((1ULL<<57) | (1ULL<<58) | (1ULL<<59))) && // b8,c8,d8 empty
+            board.castling_rights & BQUEEN_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 58); // c8
         }

@@ -15,6 +15,10 @@ typedef enum {
     A7, B7, C7, D7, E7, F7, G7, H7,
     A8, B8, C8, D8, E8, F8, G8, H8
 } Square;
+#define BKING_SIDE_CASTLE_RIGHT  0b0001
+#define BQUEEN_SIDE_CASTLE_RIGHT 0b0010
+#define WKING_SIDE_CASTLE_RIGHT  0b0100
+#define WQUEEN_SIDE_CASTLE_RIGHT 0b1000
 
 typedef uint64_t Bitboard;
 
@@ -42,12 +46,13 @@ typedef enum PieceType{
 
 typedef struct Board
 {
-    Bitboard pieces[2][6]; // [color][piece_type]
-
-    // Other
     bool fliped;
     short cliked_square_index;
     short en_passant_square;
+    uint8_t  castling_rights : 4;
+
+    Bitboard pieces[2][6];       // [color][piece_type]
+    Bitboard attaked_squares[2]; // [color]
     Bitboard occupied_squares;
     Bitboard white_occupied;
     Bitboard black_occupied;
