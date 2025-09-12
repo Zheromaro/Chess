@@ -12,10 +12,11 @@ extern "C" {
 // -------- for Test_F ---------
 static cJSON* json = get_JSON_data_in((char*)"/home/zhero/projects/Chess/test/GameLogic/MoveGenerator.json");
 
-class MoveGenerator : public ::testing::Test
+class AttackGenerator : public ::testing::Test
 {
 public:
     // is available in all TESTs
+
     Board board;
     Board board2;
     Board board3;
@@ -40,29 +41,31 @@ public:
 };
 
 // -------- for Test_P ---------
-class WPawnGenerator : public MoveGenerator, 
+
+class WPawnGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
 
-class BPawnGenerator : public MoveGenerator, 
+class BPawnGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
                        
-class RookGenerator : public MoveGenerator, 
+class RookGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class BishopGenerator : public MoveGenerator, 
+class BishopGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KnightGenerator : public MoveGenerator, 
+class KnightGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class QueenGenerator : public MoveGenerator, 
+class QueenGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KingGenerator : public MoveGenerator, 
+class KingGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<KingMoveTestCase> {};
 
+
 template <typename TestCaseT, typename F>
-std::vector<TestCaseT> load_move_testcases_template(
+std::vector<TestCaseT> load_attack_testcases_template(
     cJSON* json,
     const char* object_name,
     F customize_case)
@@ -95,12 +98,12 @@ std::vector<TestCaseT> load_move_testcases_template(
     return cases;
 }
 
-std::vector<MoveTestCase> load_move_testcases(cJSON* json, const char* object_name) {
-    return load_move_testcases_template<MoveTestCase>(json, object_name,
+std::vector<MoveTestCase> load_attack_testcases(cJSON* json, const char* object_name) {
+    return load_attack_testcases_template<MoveTestCase>(json, object_name,
         [](MoveTestCase&, const char*, const int) { /* nothing extra */ });
 }
-std::vector<PawnMoveTestCase> load_move_testcases_Pawn(cJSON* json, const char* object_name) {
-    return load_move_testcases_template<PawnMoveTestCase>(json, object_name,
+std::vector<PawnMoveTestCase> load_attack_testcases_Pawn(cJSON* json, const char* object_name) {
+    return load_attack_testcases_template<PawnMoveTestCase>(json, object_name,
         [](PawnMoveTestCase& tc, const char* board, const int i) {
             uint64_t en_passant = string_to_bitboard(board, 'E');
             if(en_passant)
@@ -111,12 +114,12 @@ std::vector<PawnMoveTestCase> load_move_testcases_Pawn(cJSON* json, const char* 
             }
         });
 }
-std::vector<KingMoveTestCase> load_move_testcases_King(cJSON* json, const char* object_name) {
+std::vector<KingMoveTestCase> load_attack_testcases_King(cJSON* json, const char* object_name) {
     int count = 0;
     char **castling_rights = get_castling_rights(json, object_name, &count);
     
     std::vector<KingMoveTestCase> kingTestCases = 
-    load_move_testcases_template<KingMoveTestCase>(json, object_name,
+    load_attack_testcases_template<KingMoveTestCase>(json, object_name,
         [castling_rights](KingMoveTestCase& tc, const char* board, const int i) {
             if (castling_rights[i])
             {
@@ -136,10 +139,9 @@ std::vector<KingMoveTestCase> load_move_testcases_King(cJSON* json, const char* 
 
     return kingTestCases;
 }
-
 #pragma endregion
 
-TEST_P(WPawnGenerator, wpawn_moves) {
+TEST_P(WPawnGenerator, wpawns_attack) {
     // arrange
     const auto& param = GetParam();
 
@@ -156,15 +158,17 @@ TEST_P(WPawnGenerator, wpawn_moves) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, WPawnGenerator,
-    ::testing::ValuesIn(load_move_testcases_Pawn(json, "wpawn_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, WPawnGenerator,
+    ::testing::ValuesIn(load_attack_testcases_Pawn(json, "wpawn_tests")));
 
-TEST_P(BPawnGenerator, bpawn_moves) {
+TEST_P(BPawnGenerator, bpawns_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
-    setOccupied(&board, param);
+    board.black_occupied = param.blockers;
+    board.white_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
     board.en_passant_square = param.enPassantSquare;
 
     // act
@@ -174,16 +178,21 @@ TEST_P(BPawnGenerator, bpawn_moves) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, BPawnGenerator,
-    ::testing::ValuesIn(load_move_testcases_Pawn(json, "bpawn_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, BPawnGenerator,
+    ::testing::ValuesIn(load_attack_testcases_Pawn(json, "bpawn_tests")));
 
-TEST_P(RookGenerator, rook_moves) {
+TEST_P(RookGenerator, rooks_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][ROOK]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
-    setOccupied(&board, param);
+    board.white_occupied = param.blockers;
+    board.black_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
+    board2.black_occupied = param.blockers;
+    board2.white_occupied = param.captures;
+    board2.occupied_squares = param.blockers | param.captures;
 
     // act
     movesW = rook_moves(playerW, board, param.pieceSquare);
@@ -194,17 +203,21 @@ TEST_P(RookGenerator, rook_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, RookGenerator,
-    ::testing::ValuesIn(load_move_testcases(json, "rook_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, RookGenerator,
+    ::testing::ValuesIn(load_attack_testcases(json, "rook_tests")));
 
-TEST_P(BishopGenerator, bishop_moves) {
+TEST_P(BishopGenerator, bishops_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][BISHOP]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][BISHOP]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    board.white_occupied = param.blockers;
+    board.black_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
+    board2.black_occupied = param.blockers;
+    board2.white_occupied = param.captures;
+    board2.occupied_squares = param.blockers | param.captures;
 
     // act
     movesW = bishop_moves(playerW, board, param.pieceSquare);
@@ -215,17 +228,21 @@ TEST_P(BishopGenerator, bishop_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, BishopGenerator,
-    ::testing::ValuesIn(load_move_testcases(json, "bishop_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, BishopGenerator,
+    ::testing::ValuesIn(load_attack_testcases(json, "bishop_tests")));
 
-TEST_P(KnightGenerator, knight_moves) {
+TEST_P(KnightGenerator, knights_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][KNIGHT]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][KNIGHT]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    board.white_occupied = param.blockers;
+    board.black_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
+    board2.black_occupied = param.blockers;
+    board2.white_occupied = param.captures;
+    board2.occupied_squares = param.blockers | param.captures;
 
     // act
     movesW = knight_moves(playerW, board, param.pieceSquare);
@@ -236,17 +253,21 @@ TEST_P(KnightGenerator, knight_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, KnightGenerator,
-    ::testing::ValuesIn(load_move_testcases(json, "knight_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, KnightGenerator,
+    ::testing::ValuesIn(load_attack_testcases(json, "knight_tests")));
 
-TEST_P(QueenGenerator, queen_moves) {
+TEST_P(QueenGenerator, queens_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    board.white_occupied = param.blockers;
+    board.black_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
+    board2.black_occupied = param.blockers;
+    board2.white_occupied = param.captures;
+    board2.occupied_squares = param.blockers | param.captures;
 
     // act
     movesW = queen_moves(playerW, board, param.pieceSquare);
@@ -257,18 +278,22 @@ TEST_P(QueenGenerator, queen_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, QueenGenerator,
-    ::testing::ValuesIn(load_move_testcases(json, "queen_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, QueenGenerator,
+    ::testing::ValuesIn(load_attack_testcases(json, "queen_tests")));
 
-TEST_P(KingGenerator, king_moves) {
+TEST_P(KingGenerator, king_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    board.white_occupied = param.blockers;
+    board.black_occupied = param.captures;
+    board.occupied_squares = param.blockers | param.captures;
     board.castling_rights = param.castling_rights;
+    board2.black_occupied = param.blockers;
+    board2.white_occupied = param.captures;
+    board2.occupied_squares = param.blockers | param.captures;
     board2.castling_rights = param.castling_rights;
 
     // act
@@ -294,5 +319,5 @@ TEST_P(KingGenerator, king_moves) {
     
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, KingGenerator,
-    ::testing::ValuesIn(load_move_testcases_King(json, "king_tests")));
+INSTANTIATE_TEST_SUITE_P(AttackCases, KingGenerator,
+    ::testing::ValuesIn(load_attack_testcases_King(json, "king_tests")));

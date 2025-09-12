@@ -89,3 +89,33 @@ char** get_expected_boards(cJSON* json, const char* object_name, int* out_count)
     *out_count = count;
     return boards; // caller frees each boards[i] and boards
 }
+
+char** get_castling_rights(cJSON* json, const char* object_name, int* out_count)
+{
+    *out_count = 0;
+
+    cJSON *tests = cJSON_GetObjectItemCaseSensitive(json, object_name);
+    if (!cJSON_IsArray(tests)) {
+        printf("Error: %s is not an array\n", object_name);
+        return NULL;
+    }
+
+    int count = cJSON_GetArraySize(tests);
+    char **rights = malloc(count * sizeof(char*));
+    if (!rights) return NULL;
+
+    int i = 0;
+    cJSON *test;
+    cJSON_ArrayForEach(test, tests) {
+        cJSON *castling = cJSON_GetObjectItemCaseSensitive(test, "castling_rights");
+        if (cJSON_IsString(castling) && castling->valuestring) {
+            rights[i] = strdup(castling->valuestring);
+        } else {
+            rights[i] = NULL; // no castling rights for this test
+        }
+        i++;
+    }
+
+    *out_count = count;
+    return rights; // caller frees each rights[i] and rights
+}
