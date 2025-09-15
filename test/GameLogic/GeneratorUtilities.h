@@ -5,9 +5,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include "GameLogic/MoveGenerator.h"
 #include "GameLogic/Board.h"
-#include "jsonReading.h"
 }
 
 // Shared fields for all move test cases
@@ -28,7 +26,7 @@ struct KingMoveTestCase : public MoveTestCase {
     uint8_t castling_rights = 0; // default: none
 };
 
-void setOccupied(Board *board, MoveTestCase param);
+void setOccupied(Board *board, MoveTestCase param, Players player);
 std::string bitboard_to_string(uint64_t bb);
 uint64_t string_to_bitboard(const char* bb_string, const char to_search);
 ::testing::AssertionResult BitboardEq(uint64_t actual, uint64_t expected);

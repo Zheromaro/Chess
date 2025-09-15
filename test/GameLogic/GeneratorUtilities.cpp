@@ -8,10 +8,19 @@ extern "C" {
 #include <stdio.h>
 }
 
-void setOccupied(Board *board, MoveTestCase param)
+void setOccupied(Board *board, MoveTestCase param, Players player)
 {
-    board->white_occupied = param.blockers;
-    board->black_occupied = param.captures;
+    if (player == WHITE_PLAYER)
+    {
+        board->white_occupied = param.blockers;
+        board->black_occupied = param.captures;
+    }
+    else if (player == BLACK_PLAYER)
+    {
+        board->black_occupied = param.blockers;
+        board->white_occupied = param.captures;
+    }
+    
     board->occupied_squares = param.blockers | param.captures;
 }
 

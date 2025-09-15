@@ -40,25 +40,25 @@ public:
 };
 
 // -------- for Test_P ---------
-class WPawnGenerator : public MoveGenerator, 
+class WPawn_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
 
-class BPawnGenerator : public MoveGenerator, 
+class BPawn_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
                        
-class RookGenerator : public MoveGenerator, 
+class Rook_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class BishopGenerator : public MoveGenerator, 
+class Bishop_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KnightGenerator : public MoveGenerator, 
+class Knight_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class QueenGenerator : public MoveGenerator, 
+class Queen_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KingGenerator : public MoveGenerator, 
+class King_MoveGenerator : public MoveGenerator, 
                        public ::testing::WithParamInterface<KingMoveTestCase> {};
 
 template <typename TestCaseT, typename F>
@@ -139,14 +139,12 @@ std::vector<KingMoveTestCase> load_move_testcases_King(cJSON* json, const char* 
 
 #pragma endregion
 
-TEST_P(WPawnGenerator, wpawn_moves) {
+TEST_P(WPawn_MoveGenerator, wpawn_moves) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
     board.en_passant_square = param.enPassantSquare;
 
     // act
@@ -156,15 +154,15 @@ TEST_P(WPawnGenerator, wpawn_moves) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, WPawnGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, WPawn_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases_Pawn(json, "wpawn_tests")));
 
-TEST_P(BPawnGenerator, bpawn_moves) {
+TEST_P(BPawn_MoveGenerator, bpawn_moves) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
-    setOccupied(&board, param);
+    setOccupied(&board, param, playerB);
     board.en_passant_square = param.enPassantSquare;
 
     // act
@@ -174,16 +172,17 @@ TEST_P(BPawnGenerator, bpawn_moves) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, BPawnGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, BPawn_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases_Pawn(json, "bpawn_tests")));
 
-TEST_P(RookGenerator, rook_moves) {
+TEST_P(Rook_MoveGenerator, rook_moves) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][ROOK]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
-    setOccupied(&board, param);
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = rook_moves(playerW, board, param.pieceSquare);
@@ -194,17 +193,17 @@ TEST_P(RookGenerator, rook_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, RookGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, Rook_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases(json, "rook_tests")));
 
-TEST_P(BishopGenerator, bishop_moves) {
+TEST_P(Bishop_MoveGenerator, bishop_moves) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][BISHOP]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][BISHOP]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = bishop_moves(playerW, board, param.pieceSquare);
@@ -215,17 +214,17 @@ TEST_P(BishopGenerator, bishop_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, BishopGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, Bishop_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases(json, "bishop_tests")));
 
-TEST_P(KnightGenerator, knight_moves) {
+TEST_P(Knight_MoveGenerator, knight_moves) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][KNIGHT]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][KNIGHT]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = knight_moves(playerW, board, param.pieceSquare);
@@ -236,17 +235,17 @@ TEST_P(KnightGenerator, knight_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, KnightGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, Knight_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases(json, "knight_tests")));
 
-TEST_P(QueenGenerator, queen_moves) {
+TEST_P(Queen_MoveGenerator, queen_moves) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = queen_moves(playerW, board, param.pieceSquare);
@@ -257,17 +256,17 @@ TEST_P(QueenGenerator, queen_moves) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, QueenGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, Queen_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases(json, "queen_tests")));
 
-TEST_P(KingGenerator, king_moves) {
+TEST_P(King_MoveGenerator, king_moves) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    setOccupied(&board, param);
-    setOccupied(&board2, param);
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
     board.castling_rights = param.castling_rights;
     board2.castling_rights = param.castling_rights;
 
@@ -294,5 +293,5 @@ TEST_P(KingGenerator, king_moves) {
     
 }
 
-INSTANTIATE_TEST_SUITE_P(MoveCases, KingGenerator,
+INSTANTIATE_TEST_SUITE_P(MoveCases, King_MoveGenerator,
     ::testing::ValuesIn(load_move_testcases_King(json, "king_tests")));

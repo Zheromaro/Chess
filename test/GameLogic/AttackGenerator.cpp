@@ -42,25 +42,25 @@ public:
 
 // -------- for Test_P ---------
 
-class WPawnGenerator : public AttackGenerator, 
+class WPawn_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
 
-class BPawnGenerator : public AttackGenerator, 
+class BPawn_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<PawnMoveTestCase> {};
                        
-class RookGenerator : public AttackGenerator, 
+class Rook_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class BishopGenerator : public AttackGenerator, 
+class Bishop_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KnightGenerator : public AttackGenerator, 
+class Knight_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class QueenGenerator : public AttackGenerator, 
+class Queen_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<MoveTestCase> {};
                        
-class KingGenerator : public AttackGenerator, 
+class King_AttackGenerator : public AttackGenerator, 
                        public ::testing::WithParamInterface<KingMoveTestCase> {};
 
 
@@ -141,14 +141,12 @@ std::vector<KingMoveTestCase> load_attack_testcases_King(cJSON* json, const char
 }
 #pragma endregion
 
-TEST_P(WPawnGenerator, wpawns_attack) {
+TEST_P(WPawn_AttackGenerator, wpawns_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][PAWN]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
     board.en_passant_square = param.enPassantSquare;
 
     // act
@@ -158,17 +156,15 @@ TEST_P(WPawnGenerator, wpawns_attack) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, WPawnGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, WPawn_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases_Pawn(json, "wpawn_tests")));
 
-TEST_P(BPawnGenerator, bpawns_attack) {
+TEST_P(BPawn_AttackGenerator, bpawns_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[BLACK_PLAYER][PAWN]), param.pieceSquare);
-    board.black_occupied = param.blockers;
-    board.white_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerB);
     board.en_passant_square = param.enPassantSquare;
 
     // act
@@ -178,21 +174,17 @@ TEST_P(BPawnGenerator, bpawns_attack) {
     EXPECT_TRUE(BitboardEq(moves, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, BPawnGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, BPawn_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases_Pawn(json, "bpawn_tests")));
 
-TEST_P(RookGenerator, rooks_attack) {
+TEST_P(Rook_AttackGenerator, rooks_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][ROOK]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][ROOK]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
-    board2.black_occupied = param.blockers;
-    board2.white_occupied = param.captures;
-    board2.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = rook_moves(playerW, board, param.pieceSquare);
@@ -203,21 +195,17 @@ TEST_P(RookGenerator, rooks_attack) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, RookGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, Rook_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases(json, "rook_tests")));
 
-TEST_P(BishopGenerator, bishops_attack) {
+TEST_P(Bishop_AttackGenerator, bishops_attack) {
     // arrange
     const auto& param = GetParam();
     
     place_piece(&(board.pieces[WHITE_PLAYER][BISHOP]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][BISHOP]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
-    board2.black_occupied = param.blockers;
-    board2.white_occupied = param.captures;
-    board2.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = bishop_moves(playerW, board, param.pieceSquare);
@@ -228,21 +216,17 @@ TEST_P(BishopGenerator, bishops_attack) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, BishopGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, Bishop_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases(json, "bishop_tests")));
 
-TEST_P(KnightGenerator, knights_attack) {
+TEST_P(Knight_AttackGenerator, knights_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][KNIGHT]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][KNIGHT]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
-    board2.black_occupied = param.blockers;
-    board2.white_occupied = param.captures;
-    board2.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = knight_moves(playerW, board, param.pieceSquare);
@@ -253,21 +237,17 @@ TEST_P(KnightGenerator, knights_attack) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, KnightGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, Knight_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases(json, "knight_tests")));
 
-TEST_P(QueenGenerator, queens_attack) {
+TEST_P(Queen_AttackGenerator, queens_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
-    board2.black_occupied = param.blockers;
-    board2.white_occupied = param.captures;
-    board2.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
 
     // act
     movesW = queen_moves(playerW, board, param.pieceSquare);
@@ -278,22 +258,18 @@ TEST_P(QueenGenerator, queens_attack) {
     EXPECT_TRUE(BitboardEq(movesB, param.expectedMoves));
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, QueenGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, Queen_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases(json, "queen_tests")));
 
-TEST_P(KingGenerator, king_attack) {
+TEST_P(King_AttackGenerator, king_attack) {
     // arrange
     const auto& param = GetParam();
 
     place_piece(&(board.pieces[WHITE_PLAYER][QUEEN]), param.pieceSquare);
     place_piece(&(board2.pieces[BLACK_PLAYER][QUEEN]), param.pieceSquare);
-    board.white_occupied = param.blockers;
-    board.black_occupied = param.captures;
-    board.occupied_squares = param.blockers | param.captures;
+    setOccupied(&board, param, playerW);
+    setOccupied(&board2, param, playerB);
     board.castling_rights = param.castling_rights;
-    board2.black_occupied = param.blockers;
-    board2.white_occupied = param.captures;
-    board2.occupied_squares = param.blockers | param.captures;
     board2.castling_rights = param.castling_rights;
 
     // act
@@ -319,5 +295,5 @@ TEST_P(KingGenerator, king_attack) {
     
 }
 
-INSTANTIATE_TEST_SUITE_P(AttackCases, KingGenerator,
+INSTANTIATE_TEST_SUITE_P(AttackCases, King_AttackGenerator,
     ::testing::ValuesIn(load_attack_testcases_King(json, "king_tests")));
