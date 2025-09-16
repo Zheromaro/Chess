@@ -10,6 +10,9 @@ const uint64_t AnotGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
 Bitboard pawns_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+
     Bitboard pawns_squares = board.pieces[player][PAWN];
     Bitboard attacks = 0ULL;
 
@@ -20,8 +23,8 @@ Bitboard pawns_attack(Players player, Board board)
 
         // Direction offsets
         bool goingUp = (player == WHITE_PLAYER);
-        int leftCapShift  = goingUp ? +7 : -7;
-        int rightCapShift = goingUp ? +9 : -9;
+        int leftCapShift  = goingUp ? +7 : -9;
+        int rightCapShift = goingUp ? +9 : -7;
 
         // Captures
         Bitboard leftCapture  = shift(bitboard & AnotA, leftCapShift);
@@ -34,6 +37,9 @@ Bitboard pawns_attack(Players player, Board board)
 }
 Bitboard rooks_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+
     Bitboard rooks_squares = board.pieces[player][ROOK];
     Bitboard attacks = 0ULL;
 
@@ -83,6 +89,9 @@ Bitboard rooks_attack(Players player, Board board)
 }
 Bitboard bishops_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+
     Bitboard bishops_squares = board.pieces[player][BISHOP];
     Bitboard attacks = 0ULL;
 
@@ -135,6 +144,9 @@ Bitboard bishops_attack(Players player, Board board)
 }
 Bitboard knights_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+
     Bitboard knights_squares = board.pieces[player][KNIGHT];
     Bitboard attacks = 0ULL;
 
@@ -158,10 +170,20 @@ Bitboard knights_attack(Players player, Board board)
 }
 Bitboard queens_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+
+    // board is passed by value here, so no restore needed
+    board.pieces[player][ROOK]   |= board.pieces[player][QUEEN];
+    board.pieces[player][BISHOP] |= board.pieces[player][QUEEN];
+
     return rooks_attack(player, board) | bishops_attack(player, board);
 }
 Bitboard king_attack(Players player, Board board)
 {
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    board.occupied_squares &= ~board.pieces[opponent][KING];
+    
     short square = __builtin_ctzll(board.pieces[player][KING]);
     Bitboard bitboard = 1ULL << square;
     Bitboard attacks = 0ULL;

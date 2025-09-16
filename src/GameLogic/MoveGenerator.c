@@ -255,13 +255,18 @@ Bitboard king_moves(Players player, Board board, short square)
     moves |= (bitboard & notA) >> 9;   // down-left
     moves |= bitboard >> 8;            // down
     moves |= (bitboard & notH) >> 7;   // down-right
+    
+    // Remove moves that land on attacked squares
+    Players opponent = (player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
+    moves &= ~board.attaked_squares[opponent];
 
+    // Remove moves that land on ally pieces
     if (board.black_occupied & moves && player == BLACK_PLAYER)
-        moves &= ~board.black_occupied; // Remove moves that land on ally pieces
+        moves &= ~board.black_occupied;
     else if (board.white_occupied & moves && player == WHITE_PLAYER)
         moves &= ~board.white_occupied;
 
-    // Castling TODO: check attacked squares and king/rook not moved
+    // Castling
     if (player == WHITE_PLAYER && square == 4) { // e1
         // King-side (e1 → g1)
         if (!(is_occupied(board.occupied_squares, 5) && is_occupied(board.occupied_squares, 5)) && // f1,g1 empty

@@ -62,10 +62,10 @@ bool move_piece(Board *board, short from, short to, Players owner, PieceType pie
     else if (piece == KING)
         apply_castling(board, from, to, owner);
     
+    update_board(board);
     update_en_passant_rights(board, from, to, owner, piece);
     update_castling_rights(board, from, to, owner, piece);
     update_attaked_squares(board);
-    update_board(board);
 
     board->cliked_square_index = 0;
     board->available_moves = 0;
@@ -171,6 +171,7 @@ void update_attaked_squares(Board *board)
     board->attaked_squares[WHITE_PLAYER] |= rooks_attack(WHITE_PLAYER, *board);
     board->attaked_squares[WHITE_PLAYER] |= queens_attack(WHITE_PLAYER, *board);
     board->attaked_squares[WHITE_PLAYER] |= king_attack(WHITE_PLAYER, *board);
+
     board->attaked_squares[BLACK_PLAYER] |= pawns_attack(BLACK_PLAYER, *board);
     board->attaked_squares[BLACK_PLAYER] |= knights_attack(BLACK_PLAYER, *board);
     board->attaked_squares[BLACK_PLAYER] |= bishops_attack(BLACK_PLAYER, *board);

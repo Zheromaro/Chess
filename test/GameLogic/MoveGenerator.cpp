@@ -10,7 +10,7 @@ extern "C" {
 
 #pragma region Test Setup
 // -------- for Test_F ---------
-static cJSON* json = get_JSON_data_in((char*)"/home/zhero/projects/Chess/test/GameLogic/MoveGenerator.json");
+static cJSON* json = get_JSON_data_in((char*)"/home/zhero/projects/Chess/test/GameLogic/Generators_test.json");
 
 class MoveGenerator : public ::testing::Test
 {

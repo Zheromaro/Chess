@@ -19,12 +19,14 @@ void init_board(Board* board)
     board->pieces[BLACK_PLAYER][KING]   = 0x1000000000000000ULL;
 
     // Other
-    board->cliked_square_index = 0;
-    board->en_passant_square = -1;
+    board->attaked_squares[WHITE_PLAYER] = 0x0000000000000000ULL;
+    board->attaked_squares[BLACK_PLAYER] = 0x0000000000000000ULL;
     board->available_moves  = 0x0000000000000000ULL;
     board->occupied_squares = 0x0000000000000000ULL;
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
+    board->cliked_square_index = 0;
+    board->en_passant_square = -1;
     board->fliped = true;
     board->castling_rights = 0b1111;
 
@@ -48,12 +50,14 @@ void init_board_empty(Board* board)
     board->pieces[BLACK_PLAYER][QUEEN]  = 0x0000000000000000ULL;
     board->pieces[BLACK_PLAYER][KING]   = 0x0000000000000000ULL;
     // Other
-    board->cliked_square_index = 0;
-    board->en_passant_square = -1;
+    board->attaked_squares[WHITE_PLAYER] = 0x0000000000000000ULL;
+    board->attaked_squares[BLACK_PLAYER] = 0x0000000000000000ULL;
     board->available_moves  = 0x0000000000000000ULL;
     board->occupied_squares = 0x0000000000000000ULL;
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
+    board->cliked_square_index = 0;
+    board->en_passant_square = -1;
     board->fliped = true;
     board->castling_rights = 0b0000;
 
