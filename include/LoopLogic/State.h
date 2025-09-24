@@ -35,9 +35,9 @@ void StateUpdate(); // <- Enter & Exit
 void StateRelease();
 
 // State management
-void pushState(State* newState, const char* format, ...);
+void pushState(State newState, const char* format, ...);
 void popState();
-void popToState(State* dis);
+void popToState(State dis);
 
 // Game loop functions
 void ReloadState();

@@ -9,7 +9,7 @@
 SDL_Rect WindowRect4 = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Texture* mainMenu = NULL;
 
-char mainMenuImageFile[] = "assets/img/MainMenu.png";
+char mainMenuImageFile[] = "assets/img/Menus/MainMenu.png";
 
 void MainMenuEnter() 
 {
@@ -23,7 +23,7 @@ void MainMenuProcessInput(SDL_Event event)
         switch (event.key.keysym.sym)
         {
         case SDLK_KP_1:
-            pushState(&twoPlayerState, "");
+            pushState(twoPlayerState, "");
             break;
         case SDLK_KP_2:
             printf("Still in working on it\n");

@@ -58,7 +58,12 @@ test_dir: ## run only one test executable: make test_dir DIR=dir/name
 	  exit 1; \
 	fi
 
-clean: ## clean the build directory
+clean: ## clean everything in build dir except vcpkg_installed
+	@if [ -d build ]; then \
+	  find build -mindepth 1 -maxdepth 1 ! -name vcpkg_installed -exec rm -rf {} +; \
+	fi
+
+clean_all: ## clean the entire build directory
 	rm -rf build/
 
 build: ## creat or complete the build directory
@@ -67,7 +72,7 @@ build: ## creat or complete the build directory
 
 rebuild: clean build ## clean the build directory and rebuild it
 
-release: clean ## clean the build directory and rebuild it for release
+release: clean_all ## clean the build directory and rebuild it for release
 	cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) -DCHESS_ENABLE_UNIT_TESTING=0 -DCMAKE_BUILD_TYPE="Release"
 	cmake --build build --config Release
 

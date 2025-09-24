@@ -42,7 +42,7 @@ TEST(BoardBasics_TEST, init_board)
     EXPECT_EQ(board.pieces[BLACK_PLAYER][ROOK]   ,0x8100000000000000ULL);
     EXPECT_EQ(board.pieces[BLACK_PLAYER][QUEEN]  ,0x0800000000000000ULL);
     EXPECT_EQ(board.pieces[BLACK_PLAYER][KING]   ,0x1000000000000000ULL);
-    EXPECT_EQ(board.cliked_square_index , 0);
+    EXPECT_EQ(board.cliked_square_index , -1);
 }
 
 TEST(BoardBasics_TEST, init_board_empty)
@@ -66,7 +66,7 @@ TEST(BoardBasics_TEST, init_board_empty)
     EXPECT_EQ(board.pieces[BLACK_PLAYER][ROOK]   ,0x0000000000000000ULL);
     EXPECT_EQ(board.pieces[BLACK_PLAYER][QUEEN]  ,0x0000000000000000ULL);
     EXPECT_EQ(board.pieces[BLACK_PLAYER][KING]   ,0x0000000000000000ULL);
-    EXPECT_EQ(board.cliked_square_index , 0);
+    EXPECT_EQ(board.cliked_square_index , -1);
 }
 
 TEST_F(Board_TEST, place_piece)

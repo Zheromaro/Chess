@@ -64,7 +64,7 @@ void destroy_window(void){
 int main(){
     gameIsRunning = initialize_window();
     
-    pushState(&mainMenuState, "");
+    pushState(mainMenuState, "");
     while (gameIsRunning)
     {
         if (reload) ReloadState();

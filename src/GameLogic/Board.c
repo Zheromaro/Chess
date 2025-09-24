@@ -25,10 +25,12 @@ void init_board(Board* board)
     board->occupied_squares = 0x0000000000000000ULL;
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
-    board->cliked_square_index = 0;
     board->en_passant_square = -1;
-    board->fliped = true;
+    board->cliked_square_index = -1;
+    board->promotion_square_index = -1;
     board->castling_rights = 0b1111;
+    board->fliped = true;
+    board->state = STILL_PLAYING;
 
     update_board(board);
 }
@@ -56,10 +58,12 @@ void init_board_empty(Board* board)
     board->occupied_squares = 0x0000000000000000ULL;
     board->white_occupied   = 0x0000000000000000ULL;
     board->black_occupied   = 0x0000000000000000ULL;
-    board->cliked_square_index = 0;
     board->en_passant_square = -1;
-    board->fliped = true;
+    board->cliked_square_index = -1;
+    board->promotion_square_index = -1;
     board->castling_rights = 0b0000;
+    board->fliped = true;
+    board->state = STILL_PLAYING;
 
     update_board(board);
 }

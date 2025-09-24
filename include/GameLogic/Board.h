@@ -22,11 +22,15 @@ typedef enum {
 
 typedef uint64_t Bitboard;
 
+// check
 typedef enum ChessGameStates {
-    STILL_PLAYING = 1,
-    BLACK_PLAYER_WON = 2,
-    WHITE_PLAYER_WON = -2,
-    DRAW = 0
+    DRAW = 0,
+    STILL_PLAYING =  0,
+    STALEMATE = 0,
+    BLACK_CHECKED =  1,
+    WHITE_CHECKED = -1,
+    BLACK_CHECKMATED =  2,
+    WHITE_CHECKMATED = -2
 } ChessGameStates;
 
 typedef enum Players {
@@ -47,6 +51,8 @@ typedef enum PieceType{
 typedef struct Board
 {
     bool fliped;
+    ChessGameStates state;
+    short promotion_square_index;
     short cliked_square_index;
     short en_passant_square;
     uint8_t  castling_rights : 4;

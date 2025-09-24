@@ -34,16 +34,16 @@ Bitboard pawn_moves(Players player, Board board, short square) {
     }
 
     // Captures
-    Bitboard leftCapture  = shift(pawnPlace, leftCapShift)  & opponentOccupied & notA;
-    Bitboard rightCapture = shift(pawnPlace, rightCapShift) & opponentOccupied & notH;
+    Bitboard leftCapture  = shift(pawnPlace & notA, leftCapShift)  & opponentOccupied;
+    Bitboard rightCapture = shift(pawnPlace & notH, rightCapShift) & opponentOccupied;
     moves |= leftCapture | rightCapture;
 
     // En passant
     if (board.en_passant_square != -1) {
         Bitboard enPassantTarget = 1ULL << board.en_passant_square;
 
-        Bitboard leftEP = shift(pawnPlace, leftCapShift)  & enPassantTarget & notA;            
-        Bitboard rightEP = shift(pawnPlace, rightCapShift) & enPassantTarget & notH;
+        Bitboard leftEP = shift(pawnPlace & notA, leftCapShift)  & enPassantTarget;            
+        Bitboard rightEP = shift(pawnPlace & notH, rightCapShift) & enPassantTarget;
         moves |= leftEP | rightEP;
     }
 
@@ -269,14 +269,16 @@ Bitboard king_moves(Players player, Board board, short square)
     // Castling
     if (player == WHITE_PLAYER && square == 4) { // e1
         // King-side (e1 → g1)
-        if (!(is_occupied(board.occupied_squares, 5) && is_occupied(board.occupied_squares, 5)) && // f1,g1 empty
+        if (!(board.occupied_squares & ((1ULL<<F1) | (1ULL<<G1))) && // f1,g1 empty
+            !(board.attaked_squares[BLACK_PLAYER] & ((1ULL<<F1) | (1ULL<<G1))) && // f1,g1 not attacked
             board.castling_rights & WKING_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 6); // g1
         }
 
         // Queen-side (e1 → c1)
-        if (!(board.occupied_squares & ((1ULL<<1) | (1ULL<<2) | (1ULL<<3))) && // b1,c1,d1 empty 
+        if (!(board.occupied_squares & ((1ULL<<B1) | (1ULL<<C1) | (1ULL<<D1))) && // b1,c1,d1 empty 
+            !(board.attaked_squares[BLACK_PLAYER] & ((1ULL<<B1) | (1ULL<<C1) | (1ULL<<D1))) && // b1,c1,d1 not attacked 
             board.castling_rights & WQUEEN_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 2); // c1
@@ -285,14 +287,16 @@ Bitboard king_moves(Players player, Board board, short square)
 
     if (player == BLACK_PLAYER && square == 60) { // e8
         // King-side (e8 → g8)
-        if (!(board.occupied_squares & ((1ULL<<61) | (1ULL<<62))) && // f8,g8 empty
+        if (!(board.occupied_squares & ((1ULL<<F8) | (1ULL<<G8))) && // f8,g8 empty
+            !(board.attaked_squares[WHITE_PLAYER] & ((1ULL<<F8) | (1ULL<<G8))) && // f8,g8 not attacked
             board.castling_rights & BKING_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 62); // g8
         }
 
         // Queen-side (e8 → c8)
-        if (!(board.occupied_squares & ((1ULL<<57) | (1ULL<<58) | (1ULL<<59))) && // b8,c8,d8 empty
+        if (!(board.occupied_squares & ((1ULL<<B8) | (1ULL<<C8) | (1ULL<<D8))) && // b8,c8,d8 empty
+            !(board.attaked_squares[WHITE_PLAYER] & ((1ULL<<B8) | (1ULL<<C8) | (1ULL<<D8))) && // b8,c8,d8 not attacked
             board.castling_rights & BQUEEN_SIDE_CASTLE_RIGHT)
         {
             moves |= (1ULL << 58); // c8

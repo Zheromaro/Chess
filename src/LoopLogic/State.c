@@ -1,8 +1,9 @@
-#include <stdbool.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <Stack.h>
 #include "GameConstant.h"
 #include "LoopLogic/State.h"
+#include "GameLogic/Board.h"
 #include "LoopLogic/appSettings.h"
 
 #define MAX_CONTEXT_NUM 10
@@ -32,7 +33,10 @@ void StateUpdate() // <- Enter & Exit
     if (holdState)
     {
         if (current && current->exit)
+        {
             ((PExit)current->exit)();
+            free(current);
+        }
 
         current = holdState;
         if (current && current->enter)
@@ -45,17 +49,18 @@ void StateUpdate() // <- Enter & Exit
 void StateRelease()
 {
     ResetContext(contextTable ,&contextCount);
-    while (holdState != NULL)
+    while (current != NULL)
     {
-        if (holdState && holdState->exit)
-            ((PExit)holdState->exit)();
+        if (current && current->exit)
+            ((PExit)current->exit)();
         
-        holdState = Pop(stateStack);
+        free(current);
+        current = Pop(stateStack);
     }
 }
 
 // State management
-void pushState(State* newState, const char* format, ...)
+void pushState(State newState, const char* format, ...)
 {
     // Get Context
     va_list args;
@@ -87,14 +92,39 @@ void pushState(State* newState, const char* format, ...)
             case '%': 
                 printf("format specifier of %% is not supported");
                 break;
+            case 'G': // this the costome game part
+                format++;
+                switch (*format) {
+                    case ' ':
+                    case '\0':
+                        printf("error no specifier after 'G' in pushState()\n");
+                        exit(EXIT_FAILURE);
+                        break;
+                    case 'S':
+                        val = malloc(sizeof(ChessGameStates));
+                        *(ChessGameStates*)val = va_arg(args, ChessGameStates);
+                        break;
+                    case 'B':
+                        val = malloc(sizeof(Board));
+                        *(Board*)val = va_arg(args, Board);
+                        break;
+                    default:
+                        printf("Unknown format specifier after G: %c\n", *format);
+                }
+                break;
             default:
                 printf("Unknown format specifier: %c\n", *format);
         }
         
         if (val)
         {
-            contextTable[contextCount] = val;
-            contextCount++;
+            if (contextCount < MAX_CONTEXT_NUM)
+                contextTable[contextCount++] = val;
+            else
+            {
+                printf("Context overflow in pushState()\n");
+                free(val); // avoid leak
+            }
         }
         format++;
     }
@@ -104,20 +134,19 @@ void pushState(State* newState, const char* format, ...)
     if (current)
         Puch(stateStack, current);
     
-    holdState = newState;
+    State *s = malloc(sizeof(State));
+    *s = newState;
+    holdState = s;
 }
 void popState()
 {
     holdState = Pop(stateStack);
     if (!holdState) printf("The state stack is empty!\n");
 }
-void popToState(State* dist)
+void popToState(State dist)
 {
-    holdState = Pop(stateStack);
-    while (holdState != NULL && holdState != dist)
-    {
-        holdState = Pop(stateStack);
-    }
+    do holdState = Pop(stateStack);
+    while (holdState != NULL && memcmp(holdState, &dist, sizeof(State)) != 0);
 
     if (!holdState) printf("The state stack is empty!\n");
 }
@@ -132,7 +161,10 @@ void ProcessInput()
 {
     SDL_PollEvent(&event);
     if (event.type == SDL_QUIT ||
-        event.key.keysym.sym == SDLK_ESCAPE) CloseGame();
+        (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
+    {
+        CloseGame();
+    }
 
     if (current && current->processInput)
         ((PProcessInput)current->processInput)(event); 

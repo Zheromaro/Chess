@@ -1,84 +1,85 @@
 #include <SDL2/SDL.h>
+#include "GameConstant.h"
 #include "LoopLogic/image.h"
 #include "LoopLogic/audio.h"
 #include "LoopLogic/text.h"
 #include "LoopLogic/appSettings.h"
-#include "GameConstant.h"
 #include "LoopLogic/State.h"
+#include "GameLogic/Board.h"
 
-//ChessGameStates gameState = DRAW;  
-//SDL_Rect WindowRect2 = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-//SDL_Texture* XWonMenuTexture = NULL;
-//SDL_Texture* OWonMenuTexture = NULL;
-//SDL_Texture* DrawMenuTexture = NULL;
-//
-//char XWonMenuImageFile[] = "assets/img/XPlayerWin.png";
-//char OWonMenuImageFile[] = "assets/img/OPlayerWin.png";
-//char DrawMenuImageFile[] = "assets/img/Draw.png";
-//char WinMusicFile[] = "assets/sound/01 - Detective Conan Main Theme.mp3";
-//char LoseMusicFile[] = "assets/sound/04 - Conan's Dream.mp3";
-//
-//void GameOverEnter(void* contextTable[])
-//{
-//    XWonMenuTexture = LoadTexture(XWonMenuImageFile);
-//    OWonMenuTexture = LoadTexture(OWonMenuImageFile);
-//    DrawMenuTexture = LoadTexture(DrawMenuImageFile);
-//
-//    gameState = *((ChessGameStates*)contextTable[0]);
-//    Players* cpu = ((Players*)contextTable[1]);
-//    
-//    if (gameState == DRAW)
-//        audioPlayMusic(LoseMusicFile);
-//    else
-//    {
-//        if (cpu && *cpu == WHITE_PLAYER && gameState == BLACK_PLAYER_WON)
-//            audioPlayMusic(LoseMusicFile);
-//        else if (cpu && *cpu == BLACK_PLAYER && gameState == WHITE_PLAYER_WON)
-//            audioPlayMusic(LoseMusicFile);
-//        else
-//            audioPlayMusic(WinMusicFile);
-//    }
-//}
-//void GameOverExit()
-//{
-//    audioPauseMusic();
-//}
-//void GameOverProcessInput(SDL_Event event)
-//{  
-//    switch (event.type)
-//    {
-//    case SDL_KEYDOWN:
-//        switch (event.key.keysym.sym)
-//        {
-//        case SDLK_KP_0:
-//            popState();
-//            break;
-//        case SDLK_KP_1:
-//            popToState(&mainMenuState);
-//            break;
-//        }
-//        break;
-//    }
-//}
-//void GameOverRender(SDL_Renderer *renderer)
-//{
-//    switch (gameState)
-//    {
-//    case BLACK_PLAYER_WON:
-//        SDL_RenderCopy(renderer, XWonMenuTexture, NULL, &WindowRect2);
-//        break;
-//    case WHITE_PLAYER_WON:
-//        SDL_RenderCopy(renderer, OWonMenuTexture, NULL, &WindowRect2);
-//        break;
-//    case DRAW:
-//        SDL_RenderCopy(renderer, DrawMenuTexture, NULL, &WindowRect2);
-//        break;
-//    }
-//}
-//
-//State gameOverState = {
-//    .enter = GameOverEnter,
-//    .exit = GameOverExit,
-//    .processInput = GameOverProcessInput,
-//    .render = GameOverRender
-//};
+ChessGameStates gameState = WHITE_CHECKMATED;  
+SDL_Rect WindowRect2 = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+SDL_Texture* BlackWinMenuTexture = NULL;
+SDL_Texture* WhiteWinMenuTexture = NULL;
+SDL_Texture* StalemateMenuTexture = NULL;
+
+char BlackWinMenuImageFile[] = "assets/img/Menus/BlackWinMenu.png";
+char WhiteWinMenuImageFile[] = "assets/img/Menus/WhiteWinMenu.png";
+char StalemateWinMenuImageFile[] = "assets/img/Menus/StalemateMenu.png";
+char WinMusicFile[] = "assets/sound/01 - Detective Conan Main Theme.mp3";
+char LoseMusicFile[] = "assets/sound/04 - Conan's Dream.mp3";
+
+void GameOverEnter(void* contextTable[])
+{
+    BlackWinMenuTexture = LoadTexture(BlackWinMenuImageFile);
+    WhiteWinMenuTexture = LoadTexture(WhiteWinMenuImageFile);
+    StalemateMenuTexture = LoadTexture(StalemateWinMenuImageFile);
+
+    gameState = *((ChessGameStates*)contextTable[0]);
+    Players* cpu = ((Players*)contextTable[1]);
+
+    if (gameState == STALEMATE)
+        audioPlayMusic(LoseMusicFile);
+    else
+    {
+        if (cpu && *cpu == WHITE_PLAYER && gameState == BLACK_CHECKMATED)
+            audioPlayMusic(LoseMusicFile);
+        else if (cpu && *cpu == BLACK_PLAYER && gameState == WHITE_CHECKMATED)
+            audioPlayMusic(LoseMusicFile);
+        else
+            audioPlayMusic(WinMusicFile);
+    }
+}
+void GameOverExit()
+{
+    audioPauseMusic();
+}
+void GameOverProcessInput(SDL_Event event)
+{  
+    switch (event.type)
+    {
+    case SDL_KEYDOWN:
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_KP_1:
+            popState();
+            break;
+        case SDLK_KP_2:
+            popToState(mainMenuState);
+            break;
+        }
+        break;
+    }
+}
+void GameOverRender(SDL_Renderer *renderer)
+{
+    switch (gameState)
+    {
+    case BLACK_CHECKMATED:
+        SDL_RenderCopy(renderer, WhiteWinMenuTexture, NULL, &WindowRect2);
+        break;
+    case WHITE_CHECKMATED:
+        SDL_RenderCopy(renderer, BlackWinMenuTexture, NULL, &WindowRect2);
+        break;
+    case STALEMATE:
+        SDL_RenderCopy(renderer, StalemateMenuTexture, NULL, &WindowRect2);
+        break;
+    }
+}
+
+State gameOverState = {
+    .enter = GameOverEnter,
+    .exit = GameOverExit,
+    .processInput = GameOverProcessInput,
+    .render = GameOverRender
+};
