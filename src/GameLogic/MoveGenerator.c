@@ -9,42 +9,38 @@ const uint64_t notH  = 0x7f7f7f7f7f7f7f7fULL; // ~file H
 const uint64_t notGH = 0x3f3f3f3f3f3f3f3fULL; // ~files G,H
 
 Bitboard pawn_moves(Players player, Board board, short square) {
-    Bitboard pawnPlace = 1ULL << square;
     Bitboard moves = 0ULL;
-
-    // Direction offsets
+    Bitboard pawn = 1ULL << square;
+    Bitboard opponentOccupied = (player == WHITE_PLAYER) ? board.black_occupied : board.white_occupied;
     bool goingUp = (player == WHITE_PLAYER);
     int forwardShift  = goingUp ? +8 : -8;
     int leftCapShift  = goingUp ? +7 : -7;
     int rightCapShift = goingUp ? +9 : -9;
+    Bitboard maskLeft  = goingUp ? notA : notH;
+    Bitboard maskRight = goingUp ? notH : notA; 
 
-    Bitboard opponentOccupied = (player == WHITE_PLAYER) ? board.black_occupied : board.white_occupied;
 
-    // Single push
-    Bitboard singlePush = shift(pawnPlace, forwardShift) & ~board.occupied_squares;
+    // --- single push ---
+    Bitboard singlePush = shift(pawn, forwardShift) & ~board.occupied_squares;
     moves |= singlePush;
 
-    // Double push (only if pawn on starting rank)
+    // --- double push --- (only if pawn on starting rank)
     Bitboard startRankMask = goingUp ? 0x000000000000FF00ULL   // rank 2
                                      : 0x00FF000000000000ULL;  // rank 7
 
-    if (pawnPlace & startRankMask) {
-        Bitboard doublePush = shift(singlePush, forwardShift) & ~board.occupied_squares;
-        moves |= doublePush;
-    }
+    if (pawn & startRankMask)
+        moves |= shift(singlePush, forwardShift) & ~board.occupied_squares;
 
-    // Captures
-    Bitboard leftCapture  = shift(pawnPlace & notA, leftCapShift)  & opponentOccupied;
-    Bitboard rightCapture = shift(pawnPlace & notH, rightCapShift) & opponentOccupied;
-    moves |= leftCapture | rightCapture;
+    // --- captures ---
+    moves |= shift(pawn & maskLeft, leftCapShift)  & opponentOccupied;  // left
+    moves |= shift(pawn & maskRight, rightCapShift) & opponentOccupied; // right
 
-    // En passant
-    if (board.en_passant_square != -1) {
-        Bitboard enPassantTarget = 1ULL << board.en_passant_square;
-
-        Bitboard leftEP = shift(pawnPlace & notA, leftCapShift)  & enPassantTarget;            
-        Bitboard rightEP = shift(pawnPlace & notH, rightCapShift) & enPassantTarget;
-        moves |= leftEP | rightEP;
+    // --- en passant ---
+    if (board.en_passant_square != -1)
+    {
+        Bitboard target = 1ULL << board.en_passant_square;
+        moves |= shift(pawn & maskLeft, leftCapShift)  & target;  // left
+        moves |= shift(pawn & maskRight, rightCapShift) & target; // right
     }
 
     return moves;

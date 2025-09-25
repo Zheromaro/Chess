@@ -65,20 +65,21 @@ bool move_piece(Board *board, short from, short to, Players owner, PieceType pie
     if ((to < 0 || to > 64) ||
         !(board->available_moves & (1ULL << to)))
         return false;
-    printf("pppp\n");
     
     remove_piece(&(board->pieces[owner][piece]), from);
     place_piece (&(board->pieces[owner][piece]), to);
     
     try_capture(board, from, to, owner, piece);
     if (piece == PAWN)
-    try_en_passant(board, from, to, owner);
+    {
+        try_en_passant(board, from, to, owner);
+        update_en_passant_rights(board, from, to, owner, piece);
+        update_promotion_status(board, to, owner);
+    }
     else if (piece == KING)
     try_castling(board, from, to, owner);
     
     update_board(board);
-    update_en_passant_rights(board, from, to, owner, piece);
-    update_promotion_status(board, to, owner);
     update_castling_rights(board, from, to, owner, piece);
     update_attaked_squares(board);
     update_game_state(board, owner);
