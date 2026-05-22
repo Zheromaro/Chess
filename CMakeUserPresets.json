@@ -5,7 +5,7 @@
       "name": "default",
       "inherits": "vcpkg",
       "environment": {
-        "VCPKG_ROOT": "/home/zhero/projects/vcpkg"
+        "VCPKG_ROOT": "/home/zahrawi/Projects/EnvironmentDependencies/vcpkg"
       }
     }
   ]

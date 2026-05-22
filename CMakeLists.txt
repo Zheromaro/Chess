@@ -1,214 +1,213 @@
 cmake_minimum_required(VERSION 3.15)
 
-#
-# Project details
-#
-
+# ==========================================================
+# 🧩 Project details
+# ==========================================================
 project(
-  "CHESS"
+  CHESS
   VERSION 0.1.0
   LANGUAGES C
 )
 
-#
-# Set project options
-#
+message(STATUS "🚀 Starting configuration for ${PROJECT_NAME} v${PROJECT_VERSION}")
 
+# ==========================================================
+# ⚙️  Load custom project settings
+# ==========================================================
 include(cmake/StandardSettings.cmake)
 include(cmake/Utils.cmake)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
-message(STATUS "Started CMake for ${PROJECT_NAME} v${PROJECT_VERSION}...\n")
 
-if (UNIX)
-    add_compile_options("$<$<CONFIG:DEBUG>:-D_DEBUG>")    #this will allow to use same _DEBUG macro available in both Linux as well as Windows - MSCV environment. Easy to put Debug specific code.
-endif (UNIX)
+# Define a cross-platform debug macro
+add_compile_definitions($<$<CONFIG:Debug>:_DEBUG>)
 
-#
-# Prevent building in the source directory
-#
-
+# ==========================================================
+# 🚫 Prevent in-source builds
+# ==========================================================
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.\n")
+  message(FATAL_ERROR "❌ In-source builds are not allowed! Please use a separate build directory.")
 endif()
 
-#
-# Enable package managers
-#
-
+# ==========================================================
+# 📦 Package Managers (Vcpkg)
+# ==========================================================
 include(cmake/Vcpkg.cmake)
 
-#
-# Create library, setup header and source files
-#
-
-# Find all headers and implementation files
+# ==========================================================
+# 📁 Source & Header Files
+# ==========================================================
 include(cmake/SourcesAndHeaders.cmake)
+message(STATUS "📂 Found project sources and headers")
 
+# ==========================================================
+# 🧱 Build Mode Logic
+# ==========================================================
 if(${PROJECT_NAME}_BUILD_EXECUTABLE)
+  message(STATUS "🏗️ Building as EXECUTABLE")
   add_executable(${PROJECT_NAME} ${exe_sources})
+  set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
 
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+    message(STATUS "📚 Building test library: ${PROJECT_NAME}_LIB")
+    add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
+  endif()
+
+elseif(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+  message(STATUS "📜 Building as HEADER-ONLY library")
+  add_library(${PROJECT_NAME} INTERFACE)
+
+else()
+  message(STATUS "📦 Building as STATIC library (.a)")
+  add_library(${PROJECT_NAME} ${headers} ${sources})
+endif()
+
+# Verbose output
+if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  if(${PROJECT_NAME}_BUILD_EXECUTABLE)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS exe_sources)
       verbose_message("* ${source}")
     endforeach()
-  endif()
-
-  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
-
-    if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-      verbose_message("Found the following headers:")
-      foreach(header IN LISTS headers)
-        verbose_message("* ${header}")
-      endforeach()
-    endif()
-  endif()
-elseif(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
-  add_library(${PROJECT_NAME} INTERFACE)
-
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-    verbose_message("Found the following headers:")
-    foreach(header IN LIST headers)
-      verbose_message("* ${header}")
-    endforeach()
-  endif()
-else()
-  add_library(
-    ${PROJECT_NAME}
-    ${headers}
-    ${sources}
-  )
-
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
+  elseif(NOT ${PROJECT_NAME}_BUILD_HEADERS_ONLY)
     verbose_message("Found the following sources:")
     foreach(source IN LISTS sources)
       verbose_message("* ${source}")
     endforeach()
-    verbose_message("Found the following headers:")
-    foreach(header IN LISTS headers)
-      verbose_message("* ${header}")
-    endforeach()
   endif()
+
+  verbose_message("Found the following headers:")
+  foreach(header IN LISTS headers)
+    verbose_message("* ${header}")
+  endforeach()
 endif()
 
+# ==========================================================
+# 🧾 Output directories
+# ==========================================================
 set_target_properties(
   ${PROJECT_NAME}
   PROPERTIES
-  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
+
 if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   set_target_properties(
     ${PROJECT_NAME}_LIB
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-    OUTPUT_NAME ${PROJECT_NAME}
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+      OUTPUT_NAME ${PROJECT_NAME}
   )
 endif()
 
-message(STATUS "Added all header and implementation files.\n")
+# ==========================================================
+# 🔗 Dependencies
+# ==========================================================
 
-#
-# Model project dependencies
-#
-
-# Identify and link with the specific "packages" the project uses
+# Vcpkg packages
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(cJSON CONFIG REQUIRED)
 
-# include the external libraries
+# Non-vcpkg external libraries
 include(cmake/ExternalLib.cmake)
 
-target_link_libraries( ${PROJECT_NAME}
-    PRIVATE
-        ${EXTERNAL_LIBS}
-        cjson
-        $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-)
-target_include_directories( ${PROJECT_NAME}
-    PUBLIC 
-        ${EXTERNAL_LIBS_INCLUDE}
-)
-if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-  target_link_libraries( ${PROJECT_NAME}_LIB
-    PRIVATE
-        ${EXTERNAL_LIBS}
-        cjson
-        $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+if(NOT ${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+  set(CHESS_LINK_LIBS
+    ${EXTERNAL_LIBS}
+    cjson
+    $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+    $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+    $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
   )
-  target_include_directories( ${PROJECT_NAME}_LIB
-    PUBLIC 
-        ${EXTERNAL_LIBS_INCLUDE}
-  )
+
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${CHESS_LINK_LIBS})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${EXTERNAL_LIBS_INCLUDE})
+
+  if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+    target_link_libraries(${PROJECT_NAME}_LIB PRIVATE ${CHESS_LINK_LIBS})
+    target_include_directories(${PROJECT_NAME}_LIB PUBLIC ${EXTERNAL_LIBS_INCLUDE})
+  endif()
 endif()
 
-#
-# Set the build/user include directories
-#
-
-# Allow usage of header files in the `src` directory, but only for utilities
+# ==========================================================
+# 📚 Include Directories
+# ==========================================================
 if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
   target_include_directories(
     ${PROJECT_NAME}
     INTERFACE
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   )
 else()
   target_include_directories(
     ${PROJECT_NAME}
     PUBLIC
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
   )
+
   if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
     target_include_directories(
       ${PROJECT_NAME}_LIB
       PUBLIC
-      $<INSTALL_INTERFACE:include>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
   endif()
 endif()
 
-message(STATUS "Finished setting up include directories.")
+message(STATUS "✅ Include directories configured.")
 
-# ??????????????
-# Install the `include` directory
-#
+# ==========================================================
+# 📦 Installation Rules
+# ==========================================================
+install(
+  TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 install(
-  DIRECTORY
-  include/${PROJECT_NAME_LOWERCASE}
-  DESTINATION
-  include
+  DIRECTORY include/${PROJECT_NAME_LOWERCASE}
+  DESTINATION include
 )
 
 verbose_message("Install targets successfully built. Install with `cmake --build <build_directory> --target install --config <build_config>`.")
 
-#
-# Unit testing setup
-#
+message(STATUS "📦 Installation setup complete.")
 
+# ==========================================================
+# 🧪 Unit Testing
+# ==========================================================
 if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   enable_testing()
-  message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
+  message(STATUS "🧪 Unit testing ENABLED — looking for tests in /test/")
   add_subdirectory(test)
 endif()
+
+# ==========================================================
+# 🧠 Build Summary
+# ==========================================================
+message(STATUS "")
+message(STATUS "====== ${PROJECT_NAME} Configuration Summary ======")
+message(STATUS "🔧 Build type:            ${CMAKE_BUILD_TYPE}")
+message(STATUS "⚙️  Executable:            ${${PROJECT_NAME}_BUILD_EXECUTABLE}")
+message(STATUS "📜 Headers-only:          ${${PROJECT_NAME}_BUILD_HEADERS_ONLY}")
+message(STATUS "🧪 Unit testing enabled:  ${${PROJECT_NAME}_ENABLE_UNIT_TESTING}")
+message(STATUS "📦 Install prefix:        ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "=====================================================")
+message(STATUS "")
