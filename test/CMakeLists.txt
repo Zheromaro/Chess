@@ -1,81 +1,71 @@
-cmake_minimum_required(VERSION 3.15)
+# ==========================================================
+# 🧪 Unit Tests
+# ==========================================================
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+verbose_message("Configuring unit tests for ${CMAKE_PROJECT_NAME}...")
 
-#
-# Project details
-#
+# ---- Determine the library target under test ----
+if(${CMAKE_PROJECT_NAME}_BUILD_EXECUTABLE)
+  set(TEST_LINK_LIB ${CMAKE_PROJECT_NAME}_LIB)
+else()
+  set(TEST_LINK_LIB ${CMAKE_PROJECT_NAME})
+endif()
 
-project(
-  ${CMAKE_PROJECT_NAME}Tests
-  LANGUAGES CXX
-)
+# ---- Locate testing framework ----
+if(${CMAKE_PROJECT_NAME}_USE_GTEST)
+  find_package(GTest CONFIG REQUIRED)
 
-verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
+  set(GTEST_TARGETS
+    GTest::GTest
+    GTest::Main
+  )
 
-foreach(dir ${test_dirs})
-  #
-  # Get all sources in this directory
-  #
-
-  file(GLOB dir_sources ${dir}/*.cpp)
-
-  #
-  # executable
-  #
-
-  get_filename_component(dir_name ${dir} NAME)
-  add_executable(${dir_name}_Test ${dir_sources})
-
-  #
-  # Set the compiler standard
-  #
-  #///
-  target_compile_features(${dir_name}_Test PUBLIC cxx_std_17)
-
-
-  #
-  # Load the desired unit testing framework
-  #
-  # Currently supported: GoogleTest (and GoogleMock)
-
-  if(${CMAKE_PROJECT_NAME}_BUILD_EXECUTABLE)
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_LIB)
-  else()
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME})
-  endif()
-
-  if(${CMAKE_PROJECT_NAME}_USE_GTEST)
-    find_package(GTest REQUIRED)
-
-    if(${CMAKE_PROJECT_NAME}_USE_GOOGLE_MOCK)
-      set(GOOGLE_MOCK_LIBRARIES GTest::gmock GTest::gmock_main)
-    endif()
-
-    target_link_libraries(
-      ${dir_name}_Test
-      PUBLIC
-        GTest::GTest
-        GTest::Main
-        ${GOOGLE_MOCK_LIBRARIES}
-        ${${CMAKE_PROJECT_NAME}_TEST_LIB}
+  if(${CMAKE_PROJECT_NAME}_USE_GOOGLE_MOCK)
+    list(APPEND GTEST_TARGETS
+      GTest::gmock
+      GTest::gmock_main
     )
-  else()
-    message(FATAL_ERROR "Unknown testing library. Please setup your desired unit testing library by using `target_link_libraries`.")  
+  endif()
+else()
+  message(FATAL_ERROR "Unsupported testing framework. Please configure target_link_libraries manually.")
+endif()
+
+# ---- Build one test executable per subdirectory in /test ----
+foreach(test_dir IN LISTS test_dirs)
+  file(GLOB test_sources CONFIGURE_DEPENDS "${test_dir}/*.cpp")
+
+  if(NOT test_sources)
+    verbose_message("  ⚠️ No .cpp sources in ${test_dir}, skipping.")
+    continue()
   endif()
 
-  #
-  # Add the unit tests to CTest
-  #
+  get_filename_component(test_name ${test_dir} NAME)
+  set(test_target ${test_name}_Test)
+
+  add_executable(${test_target} ${test_sources})
+
+  target_compile_features(${test_target} PUBLIC cxx_std_17)
+
+  target_link_libraries(
+    ${test_target}
+    PRIVATE
+      ${GTEST_TARGETS}
+      ${TEST_LINK_LIB}
+  )
+
+  set_target_properties(${test_target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+  )
 
   add_test(
-    NAME
-      ${dir_name}
-    COMMAND
-      ${dir_name}_Test
+    NAME ${test_name}
+    COMMAND ${test_target}
   )
+
+  verbose_message("  ✅ ${test_target}")
 endforeach()
 
-verbose_message("Finished adding unit tests for ${CMAKE_PROJECT_NAME}.")
+verbose_message("Unit test configuration complete.")

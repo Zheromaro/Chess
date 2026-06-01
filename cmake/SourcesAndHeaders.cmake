@@ -1,39 +1,46 @@
-file(GLOB_RECURSE sources 
-    ${PROJECT_SOURCE_DIR}/src/GameLogic/*.c
-    ${PROJECT_SOURCE_DIR}/src/LoopLogic/*.c
-    ${PROJECT_SOURCE_DIR}/src/States/*.c
-    ${PROJECT_SOURCE_DIR}/src/jsonReading.c
+# ==========================================================
+# 📁 Source & Header Files
+# ==========================================================
+
+set(SRC_DIR     "${PROJECT_SOURCE_DIR}/src")
+set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(TEST_DIR    "${PROJECT_SOURCE_DIR}/test")
+
+# ---- All source files (including main) ----
+file(GLOB_RECURSE all_sources
+    CONFIGURE_DEPENDS
+    "${SRC_DIR}/*.c"
 )
 
-set(exe_sources
-		src/main.c
-		${sources}
+# exe_sources = everything (for the executable)
+set(exe_sources ${all_sources})
+
+# sources = everything EXCEPT main.* (for the library / test lib)
+set(sources ${all_sources})
+list(FILTER sources EXCLUDE REGEX ".*/main\\.c$")
+
+# ---- Headers ----
+file(GLOB_RECURSE headers
+    CONFIGURE_DEPENDS
+    "${INCLUDE_DIR}/*.h"
 )
 
-file(GLOB_RECURSE headers 
-    ${PROJECT_SOURCE_DIR}/include/*.h
-    ${PROJECT_SOURCE_DIR}/include/LoopLogic/*.h
-    ${PROJECT_SOURCE_DIR}/include/GameLogic/*.h
+# ---- Test directories ----
+file(GLOB TEST_ENTRIES
+    LIST_DIRECTORIES TRUE
+    RELATIVE "${TEST_DIR}"
+    "${TEST_DIR}/*"
 )
 
-file(GLOB_RECURSE test_sources 
-    ${PROJECT_SOURCE_DIR}/test/GameLogic/*.cpp
-)
-
-# test_dirs
-set(TEST_DIR "${PROJECT_SOURCE_DIR}/test")
-
-# Get all entries (files + dirs) recursively
-file(GLOB_RECURSE ALL_PATHS
-    LIST_DIRECTORIES true
-    RELATIVE ${TEST_DIR}
-    ${TEST_DIR}/*
-)
-
-# Keep only directories
 set(test_dirs "")
-foreach(entry ${ALL_PATHS})
-    if(IS_DIRECTORY "${TEST_DIR}/${entry}")
-        list(APPEND test_dirs "${entry}")
-    endif()
+foreach(entry IN LISTS TEST_ENTRIES)
+  if(IS_DIRECTORY "${TEST_DIR}/${entry}")
+    list(APPEND test_dirs "${TEST_DIR}/${entry}")
+  endif()
 endforeach()
+
+# ---- Test helper sources (C utilities in test/) ----
+file(GLOB_RECURSE test_helper_sources
+    CONFIGURE_DEPENDS
+    "${TEST_DIR}/*.c"
+)

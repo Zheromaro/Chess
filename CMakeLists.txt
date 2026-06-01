@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 
 # ==========================================================
+# 📦 Package Managers (Vcpkg) must be included before project definition
+# ==========================================================
+include(cmake/Vcpkg.cmake)
+
+# ==========================================================
 # 🧩 Project details
 # ==========================================================
 project(
@@ -31,10 +36,6 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "❌ In-source builds are not allowed! Please use a separate build directory.")
 endif()
 
-# ==========================================================
-# 📦 Package Managers (Vcpkg)
-# ==========================================================
-include(cmake/Vcpkg.cmake)
 
 # ==========================================================
 # 📁 Source & Header Files
@@ -119,7 +120,7 @@ find_package(cJSON CONFIG REQUIRED)
 include(cmake/ExternalLib.cmake)
 
 if(NOT ${PROJECT_NAME}_BUILD_HEADERS_ONLY)
-  set(CHESS_LINK_LIBS
+  set(LINK_LIBS
     ${EXTERNAL_LIBS}
     cjson
     $<TARGET_NAME_IF_EXISTS:sdl2::SDL2main>
@@ -128,11 +129,11 @@ if(NOT ${PROJECT_NAME}_BUILD_HEADERS_ONLY)
     $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
   )
 
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${CHESS_LINK_LIBS})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
   target_include_directories(${PROJECT_NAME} PUBLIC ${EXTERNAL_LIBS_INCLUDE})
 
   if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    target_link_libraries(${PROJECT_NAME}_LIB PRIVATE ${CHESS_LINK_LIBS})
+    target_link_libraries(${PROJECT_NAME}_LIB PRIVATE ${LINK_LIBS})
     target_include_directories(${PROJECT_NAME}_LIB PUBLIC ${EXTERNAL_LIBS_INCLUDE})
   endif()
 endif()
@@ -205,7 +206,7 @@ endif()
 message(STATUS "")
 message(STATUS "====== ${PROJECT_NAME} Configuration Summary ======")
 message(STATUS "🔧 Build type:            ${CMAKE_BUILD_TYPE}")
-message(STATUS "⚙️  Executable:            ${${PROJECT_NAME}_BUILD_EXECUTABLE}")
+message(STATUS "⚙️ Executable:            ${${PROJECT_NAME}_BUILD_EXECUTABLE}")
 message(STATUS "📜 Headers-only:          ${${PROJECT_NAME}_BUILD_HEADERS_ONLY}")
 message(STATUS "🧪 Unit testing enabled:  ${${PROJECT_NAME}_ENABLE_UNIT_TESTING}")
 message(STATUS "📦 Install prefix:        ${CMAKE_INSTALL_PREFIX}")

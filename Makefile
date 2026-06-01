@@ -1,5 +1,5 @@
 .PHONY: help clean clean_all build rebuild release run brun \
-        test_ctest test_direct test_dir
+        test_ctest test_direct test_dir vcpkg_update
 
 .DEFAULT_GOAL := help
 
@@ -8,13 +8,12 @@
 # ==========================================================
 BROWSER := python3 -c "$$BROWSER_PYSCRIPT"
 INSTALL_LOCATION := ~/.local
-VCPKG_ROOT := /home/zahrawi/Projects/EnvironmentDependencies/vcpkg
-VCPKG_TOOLCHAIN := $(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake
 
-# necessary for vcpkg
-export CC := /usr/bin/gcc
-export CXX := /usr/bin/g++
-export CFLAGS := -Wno-error=override-init
+# cmake/Vcpkg.cmake handles the toolchain for vcpkg automatically.
+
+export CC ?= gcc
+export CXX ?= g++
+export CFLAGS ?= -Wno-error=override-init
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -46,30 +45,34 @@ help:
 # ==========================================================
 # 🧹 Cleaning
 # ==========================================================
-clean: ## Clean everything in build dir except vcpkg_installed
+clean: ## Clean build artifacts but preserve vcpkg toolchain
 	@if [ -d build ]; then \
-	  find build -mindepth 1 -maxdepth 1 ! -name vcpkg_installed -exec rm -rf {} +; \
+	  find build -mindepth 1 -maxdepth 1 \
+	    ! -name vcpkg_installed \
+	    ! -name vcpkg \
+	    -exec rm -rf {} +; \
 	fi
 
-clean_all: ## Clean the entire build directory
+clean_all: ## Clean the entire build directory (including vcpkg)
 	rm -rf build/
 
 # ==========================================================
 # 🏗️ Build Modes
 # ==========================================================
-build: ## Build the project (default, no tests)
-	cmake -B build -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_TOOLCHAIN) \
+build: ## Build the project in DEBUG mode (no tests)
+	cmake -B build \
 	      -DCMAKE_C_COMPILER=/usr/bin/gcc \
 	      -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) \
 	      -DCHESS_BUILD_EXECUTABLE=ON \
 	      -DCHESS_BUILD_HEADERS_ONLY=OFF \
-	      -DCHESS_ENABLE_UNIT_TESTING=OFF
-	cmake --build build --config Release
+	      -DCHESS_ENABLE_UNIT_TESTING=OFF \
+	      -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build --config Debug
 
 rebuild: clean build ## Clean and rebuild the project
 
 release: clean_all ## Clean and rebuild for release
-	cmake -B build -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_TOOLCHAIN) \
+	cmake -B build \
 	      -DCMAKE_C_COMPILER=/usr/bin/gcc \
 		  -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) \
 	      -DCHESS_BUILD_EXECUTABLE=ON \
@@ -82,14 +85,14 @@ release: clean_all ## Clean and rebuild for release
 # 🧪 Unit Testing
 # ==========================================================
 test_ctest: ## Configure, rebuild, and run CTest
-	cmake -B build -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_TOOLCHAIN) \
+	cmake -B build \
 	      -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) \
 	      -DCHESS_ENABLE_UNIT_TESTING=ON
 	cmake --build build --config Release
 	cd build && ctest -C Release -VV
 
 test_direct: ## Rebuild and run all test executables directly
-	cmake -B build -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_TOOLCHAIN) \
+	cmake -B build \
 	      -DCMAKE_INSTALL_PREFIX=$(INSTALL_LOCATION) \
 	      -DCHESS_ENABLE_UNIT_TESTING=ON
 	cmake --build build --config Release
@@ -119,3 +122,14 @@ run: ## Run the executable
 	./build/bin/Release/CHESS || ./build/bin/Debug/CHESS
 
 brun: build run ## Build and run
+
+# ==========================================================
+# 📦 Vcpkg Management
+# ==========================================================
+vcpkg_update: ## Update the local vcpkg installation
+	@if [ -d build/vcpkg ]; then \
+	  echo ">>> Updating vcpkg..."; \
+	  cd build/vcpkg && git pull && ./bootstrap-vcpkg.sh; \
+	else \
+	  echo "vcpkg directory not found. It will be auto-cloned on next configure."; \
+	fi

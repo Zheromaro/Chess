@@ -4,6 +4,10 @@ CMakeCache.*
 CMakeFiles/*
 [Tt]esting/*
 
+### Zed Editor ###
+.zed/
+.zed/debug.json
+
 ### VisualStudioCode ###
 .vscode/*
 .vscode/settings.json
